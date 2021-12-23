@@ -173,3 +173,8 @@ SUCH DAMAGES.
 In addition to all the above, you should only use this tool with AIA-files that you trust.
 I cannot exclude with certainty that it may in some cases be possible for an attacker to insert malicious Dart code into the generated Dart code,
 if you use a malicious AIA-file from an attacker.
+
+## Acknowledgements
+A huge thank you to the team at MIT App Inventor, for creating, maintaining and continously improving the App Inventor, which I consider one of the greatest tools to teach programming and app development!
+
+And similarly thank you to the Flutter team for creating their great cross-platform app development framework!
