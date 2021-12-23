@@ -41,6 +41,10 @@ jobs:
       - run: flutter config --enable-windows-desktop
       - name: flutter build windows
         run: flutter build windows
+      - run: |
+          copy C:\Windows\System32\msvcp140.dll build\windows\runner\Release\
+          copy C:\Windows\System32\vcruntime140.dll build\windows\runner\Release\
+          copy C:\Windows\System32\vcruntime140_1.dll build\windows\runner\Release\
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
