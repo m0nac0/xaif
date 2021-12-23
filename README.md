@@ -1,6 +1,6 @@
 # xaif
 
-Run your MIT App Inventor project's on (nearly) any operating system!
+Run your MIT App Inventor projects on (nearly) any operating system!
 
 **This tool is in an early development phase, see the disclaimer below.**
 
