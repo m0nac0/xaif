@@ -598,8 +598,8 @@ class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
       // runWithOptionalShell("open", [fileOrDir], runInShell: true,
       //     shell: shell, workingDirectory: dir?.absolute.path);
     } else if (Platform.isLinux) {
-      // runWithOptionalShell("xdg-open", [fileOrDir], runInShell: true,
-      //     shell: shell, workingDirectory: dir?.absolute.path);
+      runWithOptionalShell("xdg-open", [fileOrDir], runInShell: true,
+          shell: shell, workingDirectory: dir?.absolute.path);
     }
   }
 }
