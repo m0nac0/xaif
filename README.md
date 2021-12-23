@@ -15,12 +15,19 @@ compiled for different operating systems.
 Important: you will not need to actually write any Flutter code yourself, you just need to have Flutter installed
 so this tool can use it under the hood.
 
+Also important: you only need to install Flutter (and possibly other dependencies) on your development machine.
+Any executables you built can be installed/run on other devices without installing any dependencies. (Just like you can  
+distribute your apk)
+
 Please follow [Flutter's installation guide](https://docs.flutter.dev/get-started/install) (depending on your computer's operating system). You will need to
 complete the "Get the Flutter SDK" step.
 
-Flutter's setup guides will include additional setup steps (e.g. "Android setup", "Windows setup").
+Flutter's setup guides will include additional setup steps (e.g. "Android setup", "Web setup").
 You only need to complete these steps if you want to later compile your app for the respective platforms.
-(I.e., if you want to compile your app into a web app, you need to complete the "Web setup" step).
+(I.e., if you want to compile your app into a web app, you need to complete the "Web setup" step).<br>
+You will always need to complete the setup step for your operating system. For e.g. if you want to run xaif on 
+Windows, you need to also complete Flutter's "Windows setup" step (because xaif itself is also a Flutter app).<br>
+(In the future, a command-line tool could be made available, which wouldn't require this last setup step).
 
 Make sure that Flutter is correctly set up by running `flutter doctor` in a shell.
 
@@ -32,9 +39,8 @@ Windows computer, you won't be able to compile your app for iOS.
 **Please note that xaif has only undergone (limited) testing on Windows. It should in theory also work on 
 Linux and macOS, but this hasn't been tested, yet.**
 
-If there are prebuilt executables for your operating system available on the release page, you can just use these.
-
-Alternatively, to get xaif, you can either clone this repository with git, or download it as a zip-file and unzip it to any location.
+To get xaif, you can either clone this repository with git, or download it as a zip-file from Github (green button titled "Code")
+and unzip it to any location.
 Then open a shell in the location where you cloned/unzipped the repository and run `flutter run`.
 (This will require you to have followed the setup steps for your operating system in the Flutter installation
 guide. E.g. if you want to run this tool on Windows with this approach, you need to follow the "Windows setup" step in the Flutter
