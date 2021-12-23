@@ -36,8 +36,8 @@ Depending on your computer's operating system, the choice of platforms will vary
 Windows computer, you won't be able to compile your app for iOS.
 
 ## Download
-**Please note that xaif has only undergone (limited) testing on Windows. It should in theory also work on 
-Linux and macOS, but this hasn't been tested, yet.**
+**Please note that xaif has only undergone (limited) testing on Windows and Linux (Ubuntu). It should in theory also work on 
+ macOS, but this hasn't been tested, yet.**
 
 To get xaif, you can either clone this repository with git, or download it as a zip-file from Github (green button titled "Code")
 and unzip it to any location.
