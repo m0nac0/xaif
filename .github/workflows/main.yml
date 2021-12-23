@@ -46,3 +46,20 @@ jobs:
         with:
           name: windows_build
           path: build/windows/runner/Release/
+          
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1.5.3
+      - run: sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev
+      - run: flutter config --enable-linux-desktop
+      - name: flutter build linux
+        run: flutter build linux
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: windows_build
+          path: build/linux/x64/release/bundle
+
