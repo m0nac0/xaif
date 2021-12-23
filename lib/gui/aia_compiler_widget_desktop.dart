@@ -79,6 +79,7 @@ class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
     BuildTarget.appbundle,
     BuildTarget.web,
     if (Platform.isWindows) BuildTarget.windows,
+    if (Platform.isLinux) BuildTarget.linux,
   ];
 
   @override
@@ -619,5 +620,10 @@ class BuildTarget {
     "windows",
     "windows (exe)",
     "build/windows/runner/Release",
+  );
+  static const linux = BuildTarget._(
+    "linux",
+    "linux",
+    "build/linux/x64/release/bundle",
   );
 }
