@@ -334,6 +334,7 @@ class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
         //"flutter",
         "create",
         ".",
+        "--project-name=$dirPrefix",
       ],
       runInShell: true,
       workingDirectory: directory.absolute.path,
