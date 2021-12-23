@@ -45,6 +45,8 @@ Then open a shell in the location where you cloned/unzipped the repository and r
 guide. E.g. if you want to run this tool on Windows with this approach, you need to follow the "Windows setup" step in the Flutter
 installation guide)
 
+Alternatively, you may be able to use prebuilt binaries of xaif from the CI. They are available from the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions) (as artifacts). Use them at your own responsibility! You may be able to use these prebuilt executables to run xaif without completing the "Windows setup" or "Linux setup" step in the Flutter setup, but you still have to complete the basic Flutter setup!
+
 ## Usage Guide
 Export your project from App Inventor as an AIA file.
 
