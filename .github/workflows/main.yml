@@ -60,6 +60,6 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
-          name: windows_build
+          name: linux_build
           path: build/linux/x64/release/bundle
 
