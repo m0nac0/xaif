@@ -16,8 +16,7 @@ Important: you will not need to actually write any Flutter code yourself, you ju
 so this tool can use it under the hood.
 
 Also important: you only need to install Flutter (and possibly other dependencies) on your development machine.
-Any executables you built can be installed/run on other devices without installing any dependencies. (Just like you can  
-distribute your apk)
+Any executables you built can be installed/run on other devices without installing any dependencies. (Just like you can distribute your apk)
 
 Please follow [Flutter's installation guide](https://docs.flutter.dev/get-started/install) (depending on your computer's operating system). You will need to
 complete the "Get the Flutter SDK" step.
