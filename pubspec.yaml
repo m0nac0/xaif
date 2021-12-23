@@ -1,0 +1,54 @@
+#Copyright (C) 2021  m0nac0 (github.com/m0nac0)
+#
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU Affero General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU Affero General Public License for more details.
+#
+#You should have received a copy of the GNU Affero General Public License
+#along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+name: xaif
+description: A tool to compile apps created with MIT App Inventor for different operating systems.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 0.1.0
+
+environment:
+  sdk: ">=2.15.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  code_builder:
+    git: https://github.com/m0nac0/code_builder
+  dart_style: ^2.2.0
+  collection: ^1.15.0-nullsafety.4
+  io: ^1.0.3
+  url_launcher: ^6.0.17
+
+
+  xml: ^5.3.1
+  file_picker: ^4.2.7
+  archive: ^3.1.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^1.0.0
+
+
+flutter:
+
+  uses-material-design: true
+
