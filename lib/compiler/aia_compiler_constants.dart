@@ -166,6 +166,10 @@ Map<String, List<Event>> events = {
     Event("GotValue",
         {"tagFromWebDB": refer("String"), "valueFromWebDB": refer("dynamic")}),
   ],
+  // Not yet implemented:
+  "BarcodeScanner": [
+    Event("AfterScan", {"result": refer("String")})
+  ],
 };
 
 class Event {
