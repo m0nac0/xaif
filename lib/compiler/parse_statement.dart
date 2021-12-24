@@ -494,25 +494,23 @@ class StatementParser {
 
   Code parseStatementTinyDBMethod(
       String methodName, XmlElement block, String instanceName) {
+    state.usesSharedPreferences=true;
     if (methodName == "StoreValue") {
       Expression tag = expressionParser.parseExpressionXMLChild(
           block, "ARG0", parseStatement);
       Expression value = expressionParser.parseExpressionXMLChild(
           block, "ARG1", parseStatement);
-      return r("SharedPreferences", sharedPrefsPackage)
-          .newInstance([])
+      return r("sharedPrefs", sharedPrefsPackage)
           .property("setString")([tag, value])
           .statement;
     } else if (methodName == "ClearAll") {
-      return r("SharedPreferences", sharedPrefsPackage)
-          .newInstance([])
+      return r("sharedPrefs", sharedPrefsPackage)
           .property("clear")([])
           .statement;
     } else if (methodName == "ClearTag") {
       Expression tag = expressionParser.parseExpressionXMLChild(
           block, "ARG0", parseStatement);
-      return r("SharedPreferences", sharedPrefsPackage)
-          .newInstance([])
+      return r("sharedPrefs", sharedPrefsPackage)
           .property("remove")([tag])
           .statement;
     } else {

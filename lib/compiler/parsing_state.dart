@@ -21,6 +21,7 @@ class ParsingState {
   String appName = "";
   String screenName = "";
   String aboutMessage = "";
+  var usesSharedPreferences = false;
 
   // First all blocks are processed. We put an entry with value null for
   // all component-attribute-variables they need. E.g. if the user has a

@@ -39,6 +39,7 @@ Map<String, Expression> get sizeProperties => {
 
 Map<String, Expression> get buttonProperties => {
       "BackgroundColor": refer("Colors.grey"),
+      "Image": refer(""),
     };
 
 Map<String, Map<String, Expression>> properties = {

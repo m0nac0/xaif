@@ -14,11 +14,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import 'dart:math';
 
+import 'package:code_builder/code_builder.dart';
+import 'package:collection/collection.dart';
+
 import 'aia_compiler_constants.dart';
 import 'parsing_state.dart';
 import 'util_parser.dart';
-import 'package:code_builder/code_builder.dart';
-import 'package:collection/collection.dart';
 
 class ComponentParser {
   ComponentParser(this.state);
@@ -422,8 +423,11 @@ class ComponentParser {
               "onLongPress": disableLongPress
                   ? literalNull
                   : (eventHandlers["LongClick"] ?? getNoOpMethodExpression()),
-              "child": getDartExpressionForTextComponent(
-                  materialPackage, dartProperties, component, defaultValues),
+              "child": getComponentStringProperty(component, "Text") == null
+                  ? getImageDartExpression(
+                      dartProperties, component, defaultValues, true)
+                  : getDartExpressionForTextComponent(materialPackage,
+                      dartProperties, component, defaultValues),
               "style": r("ElevatedButton.styleFrom", materialPackage)([], {
                 "shape": component["Shape"] ==
                         "1" // Designer only property, can't change at runtime
@@ -691,7 +695,8 @@ class ComponentParser {
   }
 
   Expression getImageDartExpression(Map<String, String> dartProperties,
-      component, Map<String, Expression?> defaultValues) {
+      component, Map<String, Expression?> defaultValues,
+      [useImage = false]) {
     return maybeVisible(
         dartProperties,
         component,
@@ -704,8 +709,9 @@ class ComponentParser {
               "image": optimizedConditional(
                   getDartExpressionForProperty(
                           dartProperties,
-                          "Picture",
-                          getComponentStringProperty(component, "Picture"),
+                          useImage ? "Image" : "Picture",
+                          getComponentStringProperty(
+                              component, useImage ? "Image" : "Picture"),
                           defaultValues)
                       .property("startsWith")([
                     r("RegExp").newInstance(
@@ -714,16 +720,18 @@ class ComponentParser {
                   r("NetworkImage").newInstance([
                     getDartExpressionForProperty(
                         dartProperties,
-                        "Picture",
-                        getComponentStringProperty(component, "Picture"),
+                        useImage ? "Image" : "Picture",
+                        getComponentStringProperty(
+                            component, useImage ? "Image" : "Picture"),
                         defaultValues)
                   ]),
                   r("AssetImage").newInstance([
-                    literalString("assets/")
-                        .operatorAdd(getDartExpressionForProperty(
+                    literalString("assets/").operatorAdd(
+                        getDartExpressionForProperty(
                             dartProperties,
-                            "Picture",
-                            getComponentStringProperty(component, "Picture"),
+                            useImage ? "Image" : "Picture",
+                            getComponentStringProperty(
+                                component, useImage ? "Image" : "Picture"),
                             // outdated: Prefix path from scm with "//", because
                             // filenames from scm always refer to assets, but miss the //
                             // handleFilePath(literalString("//").operatorAdd(

@@ -14,6 +14,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import 'dart:convert';
 
+import 'package:code_builder/code_builder.dart';
+import 'package:collection/collection.dart';
+import 'package:dart_style/dart_style.dart';
+import 'package:xml/xml.dart';
+
+import '../main.dart';
 import 'aia_compiler_constants.dart';
 import 'parse_component.dart';
 import 'parse_expression.dart';
@@ -22,11 +28,6 @@ import 'parsing_state.dart';
 import 'pubspec_builder.dart';
 import 'util_parser.dart';
 import 'util_xml.dart';
-import '../main.dart';
-import 'package:code_builder/code_builder.dart';
-import 'package:collection/collection.dart';
-import 'package:dart_style/dart_style.dart';
-import 'package:xml/xml.dart';
 
 //TODO-List of issues / future work:
 // - fix GridLayout;
@@ -77,68 +78,102 @@ class AIAToDartCompiler {
             .whereNotNull()
             .toList();
 
-    var myAppStateClass = Class((b) => b
-      ..name = "MyAppState"
-      ..extend = r("State<MyApp>", materialPackage)
-      ..fields.addAll(state.fields.entries
-          .map((e) => Field((b) => b
-            ..name = e.key
-            ..assignment = e.value?.code ?? literalNull.code))
-          .toList())
-      ..methods.add(Method((b) => b
-        ..name = 'build'
-        ..requiredParameters.add(Parameter((b) => b
-          ..name = "context"
-          ..type = r("BuildContext", materialPackage)))
-        ..body = InvokeExpression.newOf(r("MaterialApp", materialPackage), [], {
-          "debugShowCheckedModeBanner": lfalse, // hide the debug banner
-          "home": InvokeExpression.newOf(r("Scaffold", materialPackage), [], {
-            "appBar": r("AppBar").newInstance([], {
-              "title": r("Text").newInstance([literalString(state.screenName)]),
-              // The overflow menu with the "About" item / dialog
-              "actions": literalList([
-                r("PopupMenuButton").newInstance([], {
-                  "itemBuilder": Method((m) => m
-                    ..requiredParameters
-                        .add(Parameter((p) => p..name = "context"))
-                    ..body = literalList([
-                      r("PopupMenuItem").newInstance([], {
-                        "child":
-                            r("Text").newInstance([literalString("About")]),
-                        "onTap": Method((m) => m
-                          ..body = r("Future").newInstanceNamed("delayed", [
-                            r("Duration").newInstance([]),
-                            wrapCodeWithEmptyLambda(r("showAboutDialog")([], {
-                              "context": r("context"),
-                              "applicationName": literalString(state.appName),
-                              "applicationLegalese": literalString(
-                                  "This app (${state.appName}) was built with $toolName. $toolName allows developers to transform applications "
-                                  "developed with MIT App Inventor into cross platform apps.\nAbout ${state.appName}:\n${state.aboutMessage}")
-                            }))
-                          ]).statement).closure
-                      })
-                    ]).returned.statement).closure
-                })
-              ])
+    var myAppStateClass = Class((b) {
+      b
+        ..name = "MyAppState"
+        ..extend = r("State<MyApp>", materialPackage)
+        ..fields.addAll(state.fields.entries
+            .map((e) => Field((b) => b
+              ..name = e.key
+              ..assignment = e.value?.code ?? literalNull.code))
+            .toList())
+        ..methods.add(Method((b) => b
+          ..name = 'build'
+          ..requiredParameters.add(Parameter((b) => b
+            ..name = "context"
+            ..type = r("BuildContext", materialPackage)))
+          ..body =
+              InvokeExpression.newOf(r("MaterialApp", materialPackage), [], {
+            "debugShowCheckedModeBanner": lfalse, // hide the debug banner
+            "home": InvokeExpression.newOf(r("Scaffold", materialPackage), [], {
+              "appBar": r("AppBar").newInstance([], {
+                //Otherwise Appbar ignores primaryColor
+                "backwardsCompatibility": literalTrue,
+                "title":
+                    r("Text").newInstance([literalString(state.screenName)]),
+                // The overflow menu with the "About" item / dialog
+                "actions": literalList([
+                  r("PopupMenuButton").newInstance([], {
+                    "itemBuilder": Method((m) => m
+                      ..requiredParameters
+                          .add(Parameter((p) => p..name = "context"))
+                      ..body = literalList([
+                        r("PopupMenuItem").newInstance([], {
+                          "child":
+                              r("Text").newInstance([literalString("About")]),
+                          "onTap": Method((m) => m
+                            ..body = r("Future").newInstanceNamed("delayed", [
+                              r("Duration").newInstance([]),
+                              wrapCodeWithEmptyLambda(r("showAboutDialog")([], {
+                                "context": r("context"),
+                                "applicationName": literalString(state.appName),
+                                "applicationLegalese": literalString(
+                                    "This app (${state.appName}) was built with $toolName. $toolName allows developers to transform applications "
+                                    "developed with MIT App Inventor into cross platform apps.\nAbout ${state.appName}:\n${state.aboutMessage}")
+                              }))
+                            ]).statement).closure
+                        })
+                      ]).returned.statement).closure
+                  })
+                ])
+              }),
+              "body": r("Builder").newInstance(
+                [],
+                {
+                  "builder": Method((b) => b
+                    ..requiredParameters.add(
+                      Parameter((p) => p..name = "context"),
+                    )
+                    ..body = Block.of([
+                      r("latestContext").assign(r("context")).statement,
+                      InvokeExpression.newOf(r("Column", materialPackage), [], {
+                        "crossAxisAlignment": r("CrossAxisAlignment.start"),
+                        "children": literalList(children)
+                      }).returned.statement
+                    ])).closure
+                },
+              )
             }),
-            "body": r("Builder").newInstance([], {
-              "builder": Method((b) => b
-                ..requiredParameters.add(
-                  Parameter((p) => p..name = "context"),
-                )
-                ..body = Block.of([
-                  r("latestContext").assign(r("context")).statement,
-                  InvokeExpression.newOf(r("Column", materialPackage), [], {
-                    "crossAxisAlignment": r("CrossAxisAlignment.start"),
-                    "children": literalList(children)
-                  }).returned.statement
-                ])).closure
+            "theme": r("ThemeData").newInstance([], {
+              "primaryColor": r("Color").newInstance([r(
+                  "0x" + (decoded["Properties"]["PrimaryColor"]?.substring(2) ?? "FF2196F3"))]),
             })
-          })
-        }).returned.statement
-        ..returns = r("Widget", materialPackage)))
-      ..methods.addAll(state.methods.entries
-          .expand((element) => element.value.entries.map((e) => e.value))));
+          }).returned.statement
+          ..returns = r("Widget", materialPackage)))
+        ..methods.addAll(state.methods.entries
+            .expand((element) => element.value.entries.map((e) => e.value)));
+      if (state.usesSharedPreferences) {
+        b.fields.add(Field((f) => f
+          ..name = "sharedPrefs"
+          ..type = r("SharedPreferences")
+          ..modifier));
+        b.methods.add(Method((m) => m
+          ..name = "initState"
+          ..body = Block.of([
+            r("initSharedPrefs")([]).statement,
+            r("super.initState").statement
+          ])));
+        b.methods.add(Method((m) => m
+          ..name = "initSharedPrefs"
+          ..modifier = MethodModifier.async
+          ..body = Block.of([
+            if (state.usesSharedPreferences)
+              r("sharedPrefs")
+                  .assign(r("SharedPreferences.getInstance")([]).awaited)
+                  .statement,
+          ])));
+      }
+    });
 
     var myAppClass = Class((b) => b
       ..name = "MyApp"

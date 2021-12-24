@@ -216,14 +216,15 @@ class ExpressionParser {
     final componentType = mutation.getAttribute("component_type");
 
     if (componentType == "TinyDB" && methodName == "GetValue") {
+      state.usesSharedPreferences = true;
       Expression tag = parseArgExpression(block, 0, parseStatement);
       Expression alternative = parseArgExpression(block, 1, parseStatement);
-      return r("SharedPreferences", sharedPrefsPackage)
-          .newInstance([])
+      return r("sharedPrefs", sharedPrefsPackage)
           .property("get")([tag])
           .ifNullThen(alternative);
     } else if (componentType == "TinyDB" && methodName == "GetTags") {
-      return r("SharedPreferences", sharedPrefsPackage).newInstance([]).property("getKeys")([]);
+      state.usesSharedPreferences = true;
+      return r("sharedPrefs", sharedPrefsPackage).property("getKeys")([]);
     }
     return literalString(
         "component expression not found $instanceName:$methodName !");
