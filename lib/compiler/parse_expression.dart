@@ -225,6 +225,8 @@ class ExpressionParser {
     } else if (componentType == "TinyDB" && methodName == "GetTags") {
       state.usesSharedPreferences = true;
       return r("sharedPrefs", sharedPrefsPackage).property("getKeys")([]);
+    } else if (componentType == "PhoneStatus" && methodName == "isDirect") {
+      return r("true/*TODO not implemented*/");
     }
     return literalString(
         "component expression not found $instanceName:$methodName !");
