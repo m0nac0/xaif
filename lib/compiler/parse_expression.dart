@@ -12,12 +12,12 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import 'parsing_state.dart';
-import 'util_xml.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:xml/xml.dart';
 
+import 'parsing_state.dart';
 import 'util_parser.dart';
+import 'util_xml.dart';
 
 class ExpressionParser {
   ExpressionParser(this.state);
@@ -187,13 +187,13 @@ class ExpressionParser {
             String varName = block
                 .findElements("field")
                 .where((element) =>
-            element.getAttribute("name")?.startsWith("VAR") ?? false).first.innerText;
+                    element.getAttribute("name")?.startsWith("VAR") ?? false)
+                .first
+                .innerText;
             // e.g.: (){var a="a"; return getVal();}()
             return Method((m) => m
               ..body = Block.of([
-                value
-                    .assignVar(varName)
-                    .statement,
+                value.assignVar(varName).statement,
                 returnVal.returned.statement
               ])).closure.call([]);
           }

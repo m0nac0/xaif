@@ -12,12 +12,13 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import 'package:code_builder/code_builder.dart';
+import 'package:xml/xml.dart';
+
 import 'parse_expression.dart';
 import 'parsing_state.dart';
 import 'util_parser.dart';
 import 'util_xml.dart';
-import 'package:code_builder/code_builder.dart';
-import 'package:xml/xml.dart';
 
 class StatementParser {
   StatementParser(this.state) : expressionParser = ExpressionParser(state);
@@ -230,13 +231,10 @@ class StatementParser {
       String varName = block
           .findElements("field")
           .where((element) =>
-      element.getAttribute("name")?.startsWith("VAR") ?? false).first.innerText;
-      return Block.of([
-        value
-            .assignVar(varName)
-            .statement,
-        stack
-      ]);
+              element.getAttribute("name")?.startsWith("VAR") ?? false)
+          .first
+          .innerText;
+      return Block.of([value.assignVar(varName).statement, stack]);
     } else if (type == "procedures_callnoreturn") {
       String name = findXMLChildByName(block, "PROCNAME", "field").innerText;
       var arguments = <Expression>[];
@@ -494,7 +492,7 @@ class StatementParser {
 
   Code parseStatementTinyDBMethod(
       String methodName, XmlElement block, String instanceName) {
-    state.usesSharedPreferences=true;
+    state.usesSharedPreferences = true;
     if (methodName == "StoreValue") {
       Expression tag = expressionParser.parseExpressionXMLChild(
           block, "ARG0", parseStatement);

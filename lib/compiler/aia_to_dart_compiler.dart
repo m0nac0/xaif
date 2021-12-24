@@ -145,8 +145,11 @@ class AIAToDartCompiler {
               )
             }),
             "theme": r("ThemeData").newInstance([], {
-              "primaryColor": r("Color").newInstance([r(
-                  "0x" + (decoded["Properties"]["PrimaryColor"]?.substring(2) ?? "FF2196F3"))]),
+              "primaryColor": r("Color").newInstance([
+                r("0x" +
+                    (decoded["Properties"]["PrimaryColor"]?.substring(2) ??
+                        "FF2196F3"))
+              ]),
             })
           }).returned.statement
           ..returns = r("Widget", materialPackage)))
