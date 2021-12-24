@@ -184,12 +184,15 @@ class ExpressionParser {
                 findBlockOfXMLChildByName(block, "RETURN"), parseStatement);
             Expression value = parseExpression(
                 findBlockOfXMLChildByName(block, "DECL0"), parseStatement);
+            String varName = block
+                .findElements("field")
+                .where((element) =>
+            element.getAttribute("name")?.startsWith("VAR") ?? false).first.innerText;
             // e.g.: (){var a="a"; return getVal();}()
             return Method((m) => m
               ..body = Block.of([
                 value
-                    .assignVar(
-                        findXMLChildByName(block, "VAR", "field").innerText)
+                    .assignVar(varName)
                     .statement,
                 returnVal.returned.statement
               ])).closure.call([]);
@@ -215,12 +218,12 @@ class ExpressionParser {
     if (componentType == "TinyDB" && methodName == "GetValue") {
       Expression tag = parseArgExpression(block, 0, parseStatement);
       Expression alternative = parseArgExpression(block, 1, parseStatement);
-      return r("SharedPreferences")
+      return r("SharedPreferences", sharedPrefsPackage)
           .newInstance([])
           .property("get")([tag])
           .ifNullThen(alternative);
     } else if (componentType == "TinyDB" && methodName == "GetTags") {
-      return r("SharedPreferences").newInstance([]).property("getKeys")([]);
+      return r("SharedPreferences", sharedPrefsPackage).newInstance([]).property("getKeys")([]);
     }
     return literalString(
         "component expression not found $instanceName:$methodName !");
@@ -343,6 +346,7 @@ class ExpressionParser {
               ? A.notEqualTo(B)
               : A.equalTo(B);
         }
+      case "logic_or":
       case "logic_operation":
         {
           Expression A = parseExpressionXMLChildA(block, parseStatement);

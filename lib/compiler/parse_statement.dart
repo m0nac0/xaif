@@ -51,9 +51,9 @@ class StatementParser {
     } else if (type == "component_method") {
       return parseStatementComponentMethod(block);
     } else if (type == "controls_if") {
-      bool hasElse = block.getElement("mutation")!.getAttribute("else") == "1";
+      bool hasElse = block.getElement("mutation")?.getAttribute("else") == "1";
       int numberElseIfs = int.parse(
-          block.getElement("mutation")!.getAttribute("elseif") ?? "0");
+          block.getElement("mutation")?.getAttribute("elseif") ?? "0");
       var result = "if(" +
           expressionParser
               .parseExpressionXMLChild(block, "IF0", parseStatement)
@@ -227,9 +227,13 @@ class StatementParser {
           findBlockOfXMLChildByName(block, "STACK", "statement"));
       Expression value = expressionParser.parseExpressionXMLChild(
           block, "DECL0", parseStatement);
+      String varName = block
+          .findElements("field")
+          .where((element) =>
+      element.getAttribute("name")?.startsWith("VAR") ?? false).first.innerText;
       return Block.of([
         value
-            .assignVar(findXMLChildByName(block, "VAR", "field").innerText)
+            .assignVar(varName)
             .statement,
         stack
       ]);
@@ -495,19 +499,19 @@ class StatementParser {
           block, "ARG0", parseStatement);
       Expression value = expressionParser.parseExpressionXMLChild(
           block, "ARG1", parseStatement);
-      return r("SharedPreferences")
+      return r("SharedPreferences", sharedPrefsPackage)
           .newInstance([])
           .property("setString")([tag, value])
           .statement;
     } else if (methodName == "ClearAll") {
-      return r("SharedPreferences")
+      return r("SharedPreferences", sharedPrefsPackage)
           .newInstance([])
           .property("clear")([])
           .statement;
     } else if (methodName == "ClearTag") {
       Expression tag = expressionParser.parseExpressionXMLChild(
           block, "ARG0", parseStatement);
-      return r("SharedPreferences")
+      return r("SharedPreferences", sharedPrefsPackage)
           .newInstance([])
           .property("remove")([tag])
           .statement;

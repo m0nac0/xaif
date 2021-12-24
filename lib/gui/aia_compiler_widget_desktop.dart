@@ -318,10 +318,14 @@ class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
     archive.files
         .where((file) => file.isFile && file.name.startsWith("assets/"))
         .forEach((file) {
-      final f = File(
-          "${directory.absolute.path}${Platform.pathSeparator}assets${Platform.pathSeparator}${file.name.replaceFirst("assets/", "")}");
-      //f.parent.createSync(recursive: true);
-      f.writeAsBytesSync(file.content as List<int>);
+      try {
+        final f = File(
+            "${directory.absolute.path}${Platform.pathSeparator}assets${Platform.pathSeparator}${file.name.replaceFirst("assets/", "")}");
+        //f.parent.createSync(recursive: true);
+        f.writeAsBytesSync(file.content as List<int>);
+      } catch (e) {
+        print(e);
+      }
     });
   }
 
