@@ -171,16 +171,16 @@ class AIAToDartCompiler {
               .statement,
       ));
       b.methods.add(Method(
-            (m) => m
+        (m) => m
           ..name = "numToMainAxisAlignment"
           ..requiredParameters.add(Parameter((p) => p..name = "value"))
           ..body = r("value")
               .equalTo(literalNum(1))
               .conditional(
-              r("MainAxisAlignment.start"),
-              r("value").equalTo(literalNum(2)).conditional(
-                  r("MainAxisAlignment.end"),
-                  r("MainAxisAlignment.center")))
+                  r("MainAxisAlignment.start"),
+                  r("value").equalTo(literalNum(2)).conditional(
+                      r("MainAxisAlignment.end"),
+                      r("MainAxisAlignment.center")))
               .returned
               .statement,
       ));
