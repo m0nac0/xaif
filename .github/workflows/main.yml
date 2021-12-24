@@ -45,6 +45,7 @@ jobs:
           copy C:\Windows\System32\msvcp140.dll build\windows\runner\Release\
           copy C:\Windows\System32\vcruntime140.dll build\windows\runner\Release\
           copy C:\Windows\System32\vcruntime140_1.dll build\windows\runner\Release\
+          copy LICENSE build\windows\runner\Release\
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
@@ -61,6 +62,7 @@ jobs:
       - run: flutter config --enable-linux-desktop
       - name: flutter build linux
         run: flutter build linux
+      - run: copy LICENSE build/linux/x64/release/bundle
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
