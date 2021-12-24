@@ -155,6 +155,21 @@ class AIAToDartCompiler {
           ..returns = r("Widget", materialPackage)))
         ..methods.addAll(state.methods.entries
             .expand((element) => element.value.entries.map((e) => e.value)));
+
+      b.methods.add(Method(
+        (m) => m
+          ..name = "numToCrossAxisAlignment"
+          ..requiredParameters.add(Parameter((p) => p..name = "value"))
+          ..body = r("value")
+              .equalTo(literalNum(1))
+              .conditional(
+                  r("CrossAxisAlignment.start"),
+                  r("value").equalTo(literalNum(2)).conditional(
+                      r("CrossAxisAlignment.end"),
+                      r("CrossAxisAlignment.center")))
+              .returned
+              .statement,
+      ));
       if (state.usesSharedPreferences) {
         b.fields.add(Field((f) => f
           ..name = "sharedPrefs"
