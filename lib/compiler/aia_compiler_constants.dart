@@ -88,8 +88,16 @@ Map<String, Map<String, Expression>> properties = {
     ...labelProperties,
     ...sizeProperties,
   }..addAll(buttonProperties),
-  "HorizontalArrangement": {...visibleProperties, "AlignVertical": literalNum(1)},
-  "VerticalArrangement": {...visibleProperties, "AlignHorizontal": literalNum(1)},
+  "HorizontalArrangement": {
+    ...visibleProperties,
+    "AlignVertical": literalNum(1),
+    "AlignHorizontal": literalNum(1)
+  },
+  "VerticalArrangement": {
+    ...visibleProperties,
+    "AlignHorizontal": literalNum(1),
+    "AlignVertical": literalNum(1)
+  },
   "VerticalScrollArrangement": visibleProperties..addAll(sizeProperties),
   "HorizontalScrollArrangement": visibleProperties..addAll(sizeProperties),
   "TableArrangement": visibleProperties..addAll(sizeProperties),

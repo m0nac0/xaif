@@ -170,6 +170,20 @@ class AIAToDartCompiler {
               .returned
               .statement,
       ));
+      b.methods.add(Method(
+            (m) => m
+          ..name = "numToMainAxisAlignment"
+          ..requiredParameters.add(Parameter((p) => p..name = "value"))
+          ..body = r("value")
+              .equalTo(literalNum(1))
+              .conditional(
+              r("MainAxisAlignment.start"),
+              r("value").equalTo(literalNum(2)).conditional(
+                  r("MainAxisAlignment.end"),
+                  r("MainAxisAlignment.center")))
+              .returned
+              .statement,
+      ));
       if (state.usesSharedPreferences) {
         b.fields.add(Field((f) => f
           ..name = "sharedPrefs"

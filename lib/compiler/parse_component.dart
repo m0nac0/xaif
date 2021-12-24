@@ -292,11 +292,20 @@ class ComponentParser {
         component,
         defaultValues,
         r("Column").newInstance([], {
-          "crossAxisAlignment": r("numToCrossAxisAlignment")([getDartExpressionForProperty(
-              dartProperties,
-              "AlignHorizontal",
-              getComponentNumProperty(component, "AlignHorizontal"),
-              defaultValues)]),
+          "mainAxisAlignment": r("numToMainAxisAlignment")([
+            getDartExpressionForProperty(
+                dartProperties,
+                "AlignVertical",
+                getComponentNumProperty(component, "AlignVertical"),
+                defaultValues)
+          ]),
+          "crossAxisAlignment": r("numToCrossAxisAlignment")([
+            getDartExpressionForProperty(
+                dartProperties,
+                "AlignHorizontal",
+                getComponentNumProperty(component, "AlignHorizontal"),
+                defaultValues)
+          ]),
           "children": literalList(childrenComponents)
         }));
   }
@@ -313,11 +322,20 @@ class ComponentParser {
         component,
         defaultValues,
         r("Row").newInstance([], {
-          "crossAxisAlignment": r("numToCrossAxisAlignment")([getDartExpressionForProperty(
-        dartProperties,
-        "AlignVertical",
-        getComponentNumProperty(component, "AlignVertical"),
-        defaultValues)]),
+          "mainAxisAlignment": r("numToMainAxisAlignment")([
+            getDartExpressionForProperty(
+                dartProperties,
+                "AlignHorizontal",
+                getComponentNumProperty(component, "AlignHorizontal"),
+                defaultValues)
+          ]),
+          "crossAxisAlignment": r("numToCrossAxisAlignment")([
+            getDartExpressionForProperty(
+                dartProperties,
+                "AlignVertical",
+                getComponentNumProperty(component, "AlignVertical"),
+                defaultValues)
+          ]),
           "children": literalList(childrenComponents)
         }));
   }
