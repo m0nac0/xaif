@@ -62,7 +62,7 @@ jobs:
       - run: flutter config --enable-linux-desktop
       - name: flutter build linux
         run: flutter build linux
-      - run: copy LICENSE build/linux/x64/release/bundle
+      - run: cp LICENSE build/linux/x64/release/bundle
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
