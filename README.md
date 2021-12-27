@@ -146,6 +146,9 @@ overflow menu ("three dot menu"), that opens an about dialog. That dialog contai
 your app and the option to open a licenses page with some information about all plugins and their licenses (generated
 automatically by Flutter).
 
+## Feedback & Contributions
+If you have any feedback, or encounter any issues running your project, please let me know by [opening an issue](https://github.com/m0nac0/xaif/issues/new) or [discussion](https://github.com/m0nac0/xaif/discussions/new)!
+
 ## Disclaimer
 This tool is in an early development phase and not very well tested.
 
