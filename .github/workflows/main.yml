@@ -75,6 +75,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1.5.3
-      - name: flutter build web
-        run: flutter build web
+      - run: flutter pub global activate peanut
+      - run: flutter pub global run peanut -b test-web-2
 
