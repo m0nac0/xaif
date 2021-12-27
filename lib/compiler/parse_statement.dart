@@ -268,9 +268,20 @@ class StatementParser {
         return r(getPropertyDartName(instanceName, "Player"))
             .property("play")([])
             .statement;
-      } else if (methodName == "Pause" || methodName == "Stop") {
+      } else if (methodName == "Pause") {
         return r(getPropertyDartName(instanceName, "Player"))
-            .property(methodName.toLowerCase())([])
+            .property("pause")([])
+            .statement;
+      } else if (methodName == "Stop") {
+        return r(getPropertyDartName(instanceName, "Player"))
+            .property("pause")([])
+            .property("then")([
+              Method((b) => b
+                ..requiredParameters.add(Parameter((p) => p..name = "_"))
+                ..body = r(getPropertyDartName(instanceName, "Player"))
+                    .property("seek")([r("Duration").newInstance([])])
+                    .statement).closure
+            ])
             .statement;
       }
     } else if (componentType == "Notifier") {
