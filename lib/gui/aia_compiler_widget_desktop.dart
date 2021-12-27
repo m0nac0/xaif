@@ -158,19 +158,16 @@ class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
                     ],
                   ),
                 ),
-              if (dir == null) Divider(),
+              if (dir == null) const Divider(),
               spacer,
               SizedBox(
                   width: 400,
                   height: code.split("\n").length > 2 ? 50 : 200,
                   child: ElevatedButton(
                     child: Text(
-                      "Select AIA file " +
-                          (dir != null
-                              ? "to update"
-                              : ""),
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      "Select AIA file " + (dir != null ? "to update" : ""),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onPressed: () => pickAndHandleAIAFile(context),
                   )),
