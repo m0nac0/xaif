@@ -41,9 +41,9 @@ To get xaif, you have two options:
 1. You can either clone this repository with git or download it as a zip-file from Github (green button titled "Code")
 and unzip it to any location.<br>
 Then open a shell in the location where you cloned/unzipped the repository and run `flutter run -d windows` (if your computer is running Windows) or `flutter run -d linux` (if your computer is running Linux).<br>
-(This will require you to have followed the setup steps for your operating system in the Flutter installation
-guide. E.g. if you want to run xaif on Windows with this approach, you need to follow the "Windows setup" step in the Flutter
-installation guide)
+(This will require you to have followed the *additional* setup steps for your operating system in the Flutter installation
+guide. So if you want to run xaif on Windows with this approach, you need to *also* follow the ["Windows setup" step](https://docs.flutter.dev/get-started/install/windows#windows-setup) in the Flutter Windows
+installation guide, or the ["Linux setup" step](https://docs.flutter.dev/get-started/install/linux#linux-setup) in the Flutter Linux installation guide if you want to run xaif on Linux with this approach)
 
 2. Alternatively, you should be able to use prebuilt binaries of xaif from the CI. They are available from the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain) (as artifacts). <br>
 You should be able to use these prebuilt executables to run xaif without completing the "Windows setup" or "Linux setup" step in the Flutter setup, but you still have to complete the basic Flutter setup!
