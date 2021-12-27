@@ -40,7 +40,7 @@ To get xaif, you have two options:
 
 1. You can either clone this repository with git or download it as a zip-file from Github (green button titled "Code")
 and unzip it to any location.<br>
-Then open a shell in the location where you cloned/unzipped the repository and run `flutter run`.<br>
+Then open a shell in the location where you cloned/unzipped the repository and run `flutter run -d windows` (if your computer is running Windows) or `flutter run -d linux` (if your computer is running Linux).<br>
 (This will require you to have followed the setup steps for your operating system in the Flutter installation
 guide. E.g. if you want to run xaif on Windows with this approach, you need to follow the "Windows setup" step in the Flutter
 installation guide)
