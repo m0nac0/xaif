@@ -12,12 +12,11 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'gui/gui_stub.dart'
-if (dart.library.html)  'package:xaif/gui/aia_compiler_widget_web.dart'
-if (dart.library.io) 'gui/aia_compiler_widget_desktop.dart';
+    if (dart.library.html) 'package:xaif/gui/aia_compiler_widget_web.dart'
+    if (dart.library.io) 'gui/aia_compiler_widget_desktop.dart';
 
 const toolName = "xaif";
 
