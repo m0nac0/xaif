@@ -50,8 +50,8 @@ class AIAToDartCompiler {
     final jsonString = scheme.substring(9, scheme.length - 3);
     final decoded = jsonDecode(jsonString);
 
-    state.appName = decoded["Properties"]["AppName"];
-    state.screenName = decoded["Properties"]["Title"];
+    state.appName = decoded["Properties"]["AppName"] ?? "";
+    state.screenName = decoded["Properties"]["Title"] ?? "";
     state.aboutMessage = decoded["Properties"]["AboutScreen"] ?? "";
 
     final xml = blockly.isEmpty ? XmlDocument() : XmlDocument.parse(blockly);
@@ -74,7 +74,8 @@ class AIAToDartCompiler {
     var componentParser = ComponentParser(state);
     List<Expression> children =
         (decoded["Properties"]["\$Components"] as Iterable)
-            .map((component) => componentParser.parseComponent(component))
+            .map((component) =>
+                componentParser.parseComponent(component, false, true))
             .whereNotNull()
             .toList();
 
@@ -86,7 +87,10 @@ class AIAToDartCompiler {
             .map((e) => Field((b) => b
               ..name = e.key
               ..assignment = e.value?.code ?? literalNull.code))
-            .toList())
+            .toList()
+            .where((element) =>
+                state.gettersSetters.none((p0) => p0.name == element.name)))
+        ..methods.addAll(state.gettersSetters)
         ..methods.add(Method((b) => b
           ..name = 'build'
           ..requiredParameters.add(Parameter((b) => b
@@ -205,6 +209,17 @@ class AIAToDartCompiler {
                   .statement,
           ])));
       }
+      if (state.usesEnsureNum) {
+        b.methods.add(Method((m) => m
+          ..name = "ensureNum"
+          ..requiredParameters.add(Parameter((p) => p..name = "value"))
+          ..lambda = true
+          ..body = r("value")
+              .isA(r("num"))
+              .conditional(r("value"),
+                  r("num.parse")([r("value").property("toString")([])]))
+              .code));
+      }
     });
 
     var myAppClass = Class((b) => b
@@ -232,12 +247,25 @@ class AIAToDartCompiler {
     const dartVersion = "// @dart=2.9\r\n"; // no sound null safety
     const linterHints =
         "// ignore_for_file: non_constant_identifier_names\r\n// ignore_for_file: prefer_const_constructors\r\n";
-    var dartCode = DartFormatter()
-        .format(dartVersion + linterHints + library.accept(emitter).toString());
+    //possibly instead call toString() in text_join for every argument
+    const safePlusExtension = r'''extension SafePlus on String{
+      /// A safer String addition, that automatically calls toString() for
+      /// every added object (like AI does). Allows e.g. "a" + ["b"]
+      String operator % (dynamic a){
+        return this + a.toString();
+      }
+    }''';
+    var sourceString =
+        dartVersion + linterHints + library.accept(emitter).toString();
+    if (state.usesSafeStringAddition) {
+      sourceString += safePlusExtension;
+    }
+    var dartCode = DartFormatter().format(sourceString);
     var packageRegex = RegExp(r"package:(\w+)\/[\w\/]+\.dart");
     var imports = allocator.imports
         .map((import) => packageRegex.firstMatch(import.url)?.group(1))
-        .whereNotNull();
+        .whereNotNull()
+        .toList();
     return CompilationResult(dartCode, PubspecBuilder.getPubspec(imports));
   }
 

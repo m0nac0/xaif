@@ -14,6 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:code_builder/code_builder.dart';
+import 'package:xaif/compiler/util_parser.dart';
 
 /// Contains constant data on AI-components' different properties and events
 
@@ -91,12 +92,14 @@ Map<String, Map<String, Expression>> properties = {
   "HorizontalArrangement": {
     ...visibleProperties,
     "AlignVertical": literalNum(1),
-    "AlignHorizontal": literalNum(1)
+    "AlignHorizontal": literalNum(1),
+    ...sizeProperties,
   },
   "VerticalArrangement": {
     ...visibleProperties,
     "AlignHorizontal": literalNum(1),
-    "AlignVertical": literalNum(1)
+    "AlignVertical": literalNum(1),
+    ...sizeProperties,
   },
   "VerticalScrollArrangement": visibleProperties..addAll(sizeProperties),
   "HorizontalScrollArrangement": visibleProperties..addAll(sizeProperties),
@@ -132,6 +135,12 @@ Map<String, Map<String, Expression>> properties = {
     ...visibleProperties,
     ...sizeProperties,
   },
+  "Player": {
+    "IsPlaying": lfalse,
+    "Loop": lfalse,
+    "Source": literalString(""),
+    "Volume": literalNum(50),
+  },
   "PhoneCall": {"PhoneNumber": literalString("")},
   "Texting": {
     "PhoneNumber": literalString(""),
@@ -139,7 +148,10 @@ Map<String, Map<String, Expression>> properties = {
   },
   "TinyWebDB": {
     "ServiceUrl": literalString("http://tinywebdb.appinventor.mit.edu")
-  }
+  },
+  "Web": {
+    "Url": literalString(""),
+  },
 };
 
 Map<String, List<Event>> events = {
@@ -160,6 +172,9 @@ Map<String, List<Event>> events = {
   "ListView": [
     Event("AfterPicking"),
   ],
+  "Player": [
+    Event("Completed"),
+  ],
   "File": [
     Event("AfterFileSaved", {"fileName": refer("String")}),
     Event("GotText", {"text": refer("String")}),
@@ -175,6 +190,24 @@ Map<String, List<Event>> events = {
     Event("GotValue",
         {"tagFromWebDB": refer("String"), "valueFromWebDB": refer("dynamic")}),
   ],
+  "Web": [
+    Event("GotFile", {
+      "url": r("String"),
+      "responseCode": r("double"),
+      "responseType": r("String"),
+      "fileName": r("String")
+    }),
+    Event("GotText", {
+      "url": r("String"),
+      "responseCode": r("int"),
+      "responseType": r("String"),
+      "responseContent": r("String")
+    }),
+    Event("TimedOut", {
+      "url": r("String"),
+    }),
+  ],
+
   // Not yet implemented:
   "BarcodeScanner": [
     Event("AfterScan", {"result": refer("String")})

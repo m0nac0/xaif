@@ -18,10 +18,13 @@ import 'package:code_builder/code_builder.dart';
 /// Dart.
 class ParsingState {
   Map<String, Map<String, Method>> methods = {};
+  List<Method> gettersSetters = [];
   String appName = "";
   String screenName = "";
   String aboutMessage = "";
   var usesSharedPreferences = false;
+  bool usesSafeStringAddition = false;
+  bool usesEnsureNum = false;
 
   // First all blocks are processed. We put an entry with value null for
   // all component-attribute-variables they need. E.g. if the user has a

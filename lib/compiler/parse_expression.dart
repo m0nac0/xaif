@@ -12,6 +12,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:code_builder/code_builder.dart';
 import 'package:xml/xml.dart';
 
@@ -227,9 +228,26 @@ class ExpressionParser {
       return r("sharedPrefs", sharedPrefsPackage).property("getKeys")([]);
     } else if (componentType == "PhoneStatus" && methodName == "isDirect") {
       return r("true/*TODO not implemented*/");
+    } else if (componentType == "Web") {
+      if (methodName == "UriDecode") {
+        return r("Uri.decodeComponent")(
+            [parseArgExpression(block, 0, parseStatement)]);
+      } else if (methodName == "UriEncode") {
+        return r("Uri.encodeComponent")(
+            [parseArgExpression(block, 0, parseStatement)]);
+      } else if (methodName == "HtmlTextDecode") {
+        return r("parseFragment", htmlPackage)(
+            [parseArgExpression(block, 0, parseStatement)]).property("text");
+      } else if (methodName == "JsonObjectEncode") {
+        return r("jsonEncode", convertPackage)(
+            [parseArgExpression(block, 0, parseStatement)]);
+      } else if (methodName == "JsonTextDecode") {
+        return r("jsonDecode", convertPackage)(
+            [parseArgExpression(block, 0, parseStatement)]);
+      }
     }
     return literalString(
-        "component expression not found $instanceName:$methodName !");
+        "component expression not found $instanceName:$methodName!");
   }
 
   /// Parse an expression from the text category of builtin blocks
@@ -252,10 +270,40 @@ class ExpressionParser {
           int items = getXMLItemCount(block);
           Expression result = literalString("");
           for (int i = 0; i < items; i++) {
-            result = result.operatorAdd(parseExpression(
+            result = result.operatorEuclideanModulo(parseExpression(
                 findBlockOfXMLChildByName(block, "ADD$i"), parseStatement));
           }
+          state.usesSafeStringAddition = true;
           return result;
+        }
+      case "text_compare":
+        {
+          Expression A =
+              parseExpressionXMLChild(block, "TEXT1", parseStatement);
+          Expression B =
+              parseExpressionXMLChild(block, "TEXT2", parseStatement);
+          switch (findXMLChildOp(block)) {
+            case "EQUAL":
+              {
+                return A.property("compareTo")([B]).equalTo(literalNum(0));
+              }
+            case "NEQ":
+              {
+                return A.property("compareTo")([B]).notEqualTo(literalNum(0));
+              }
+            case "LT":
+              {
+                return A.property("compareTo")([B]).lessThan(literalNum(0));
+              }
+            case "GT":
+              {
+                return A.property("compareTo")([B]).greaterThan(literalNum(0));
+              }
+            default:
+              {
+                return A.property("compareTo")([B]).equalTo(literalNum(0));
+              }
+          }
         }
       case "text_contains":
         {
@@ -365,9 +413,12 @@ class ExpressionParser {
     switch (type) {
       case "math_number":
         {
-          return literalNum(double.tryParse(
+          var parsed = int.tryParse(
                   findXMLChildByName(block, "NUM", "field").innerText) ??
-              0);
+              (double.tryParse(
+                      findXMLChildByName(block, "NUM", "field").innerText) ??
+                  0);
+          return literalNum(parsed);
         }
       case "math_number_radix":
         {
@@ -553,7 +604,7 @@ class ExpressionParser {
       case "lists_create_with":
         {
           int count =
-              int.parse(block.getElement("mutation")!.getAttribute("count")!);
+              int.parse(block.getElement("mutation")!.getAttribute("items")!);
           var items = <Expression>[];
           for (int i = 0; i < count; i++) {
             items.add(
@@ -566,13 +617,13 @@ class ExpressionParser {
       case "lists_length":
         {
           return parseExpression(
-                  findBlockOfXMLChildByName(block, "VALUE"), parseStatement)
+                  findBlockOfXMLChildByName(block, "LIST"), parseStatement)
               .property("length");
         }
       case "lists_is_empty":
         {
           return parseExpression(
-                  findBlockOfXMLChildByName(block, "VALUE"), parseStatement)
+                  findBlockOfXMLChildByName(block, "LIST"), parseStatement)
               .property("isEmpty");
         }
       case "lists_is_in":

@@ -129,9 +129,9 @@ class StatementParser {
       Code do0 =
           parseStatement(findBlockOfXMLChildByName(block, "DO", "statement"));
 
-      return Code("for(" +
+      return Code("for(var " +
           findXMLChildByName(block, "VAR", "field").innerText +
-          ":" +
+          " in " +
           list.accept(emitter).toString() +
           "){" +
           do0.accept(emitter).toString() +
@@ -263,6 +263,16 @@ class StatementParser {
       return parseStatementDatePickerMethod(methodName, instanceName, block);
     } else if (componentType == "TimePicker") {
       return parseStatementTimePickerMethod(methodName, instanceName, block);
+    } else if (componentType == "Player") {
+      if (methodName == "Start") {
+        return r(getPropertyDartName(instanceName, "Player"))
+            .property("play")([])
+            .statement;
+      } else if (methodName == "Pause" || methodName == "Stop") {
+        return r(getPropertyDartName(instanceName, "Player"))
+            .property(methodName.toLowerCase())([])
+            .statement;
+      }
     } else if (componentType == "Notifier") {
       return parseStatementNotifierMethod(methodName, block, instanceName);
     } else if (componentType == "PhoneCall" && methodName == "MakePhoneCall") {
@@ -318,6 +328,73 @@ class StatementParser {
       return parseStatementTinyDBMethod(methodName, block, instanceName);
     } else if (componentType == "TinyWebDB") {
       return parseStatementTinyWebDBMethod(methodName, block, instanceName);
+    } else if (componentType == "Web") {
+      if (methodName == "Get" || methodName == "Delete") {
+        var url = getExpressionForAttribute(instanceName, "Url");
+        var httpMethod = methodName.toLowerCase();
+        return r(httpMethod, httpPackage)([
+          r("Uri.parse")([url])
+        ], {})
+            .property("then")([
+              Method((b) => b
+                ..requiredParameters.add(Parameter((p) => p..name = "response"))
+                ..body = Block.of([
+                  safeCallEventHandler(
+                      getDartEventHandler(state, instanceName, "GotText"), [
+                    url,
+                    r("response.statusCode"),
+                    literalString(httpMethod),
+                    r("response.body")
+                  ])
+                ])).closure
+            ])
+            .statement;
+      } else if (methodName == "PostText" ||
+          methodName == "PostTextWithEncoding" ||
+          methodName == "PutText" ||
+          methodName == "PutTextWithEncoding" ||
+          methodName == "PatchText" ||
+          methodName == "PatchTextWithEncoding") {
+        Expression text =
+            expressionParser.parseArgExpression(block, 0, parseStatement);
+        Expression? encoding = methodName.endsWith("WithEncoding")
+            ? r("Encoding.getByName")(
+                [expressionParser.parseArgExpression(block, 1, parseStatement)])
+            : null;
+        String httpMethod = methodName.startsWith("Post")
+            ? "post"
+            : (methodName.startsWith("Put") ? "put" : "patch");
+        var url = getExpressionForAttribute(instanceName, "Url");
+        return r(httpMethod, httpPackage)([
+          r("Uri.parse")([url])
+        ], {
+          "body": text,
+          if (encoding != null) "encoding": encoding,
+        })
+            .property("then")([
+              Method((b) => b
+                ..requiredParameters.add(Parameter((p) => p..name = "response"))
+                ..body = Block.of([
+                  safeCallEventHandler(
+                      getDartEventHandler(state, instanceName, "GotText"), [
+                    url,
+                    r("response.statusCode"),
+                    literalString(httpMethod),
+                    r("response.body")
+                  ])
+                ])).closure
+            ])
+            .statement;
+      }
+
+      // if (methodName == "Get") {
+      //   var httpClient = HttpClient();
+      //   httpClient.getUrl(Uri.parse("http://example.com")).then((request) {
+      //     request.close().then((response) {
+      //       final stringData = response.transform(utf8.decoder).join();
+      //     });
+      //   });
+      // }
     }
     return parseStatementComponentMethodError(instanceName, methodName);
   }

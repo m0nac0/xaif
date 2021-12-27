@@ -31,6 +31,7 @@ const convertPackage = "dart:convert";
 
 // packages supported by Dart/Flutter team
 const httpPackage = "package:http/http.dart";
+const htmlPackage = "package:html/parser.dart";
 const xfilePackage = "package:cross_file/cross_file.dart";
 const sharedPrefsPackage = "package:shared_preferences/shared_preferences.dart";
 const urlLauncherPackage = "package:url_launcher/url_launcher.dart";
@@ -39,6 +40,7 @@ const imagePickerPackage = "package:image_picker/image_picker.dart";
 //Third party packages
 // WHEN USING NEW PACKAGE: add to template; check license etc. const justAudioPackage = "package:just_audio/just_audio.dart";
 const sharePlusPackage = "package:share_plus/share_plus.dart";
+const justAudioPackage = "package:just_audio/just_audio.dart";
 
 /// An optimized version of conditional() that returns just whenTrue or whenFalse, if condition
 /// is ltrue or lfalse (that means, the condition always has a constant value and can
@@ -107,3 +109,6 @@ Expression wrapCodeWithEmptyLambda(Expression code) {
     ..lambda = true
     ..body = code.code).closure;
 }
+
+String getPropertyDartName(String componentName, String prop) =>
+    componentName + "_" + prop;

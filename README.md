@@ -117,7 +117,7 @@ comfortable building it in an admin shell!
 
 - UI: complete except ListPicker, WebViewer & possibly some attributes on some components.
 - Layout: complete (Change: TableArrangement is scrollable)
-- Media: only Camera, Camcorder, ImagePicker
+- Media: only Camera, Camcorder, ImagePicker, Player
 - Drawing/Animation: none
 - Maps: none
 - Sensors: only Clock (limited)
@@ -126,7 +126,7 @@ comfortable building it in an admin shell!
     - File does not have functionality for Delete, Append, LegacyMode
     - NB TinyWebDB may not work correctly in web browsers, if the used web service does not run on https
       (like the default one)
-- Connectivity: none
+- Connectivity: only Web (no sending/saving files, no cookies, no header/timeout control, no decoding with dictionaries)
 - Mindstorms: none (will not implement due to lack of Mindstorms equipment)
 - Experimental: none
 - Extensions: not yet supported

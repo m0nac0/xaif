@@ -19,18 +19,25 @@ class PubspecBuilder {
   static const allowedPackages = [
     //packages supported by the Dart/Flutter team
     "http",
+    "html",
     "cross_file",
     "shared_preferences",
     "url_launcher",
     "image_picker",
     //Third-party packages
-    "share_plus"
+    "share_plus",
+    "just_audio",
+    "just_audio_libwinmedia",
   ];
 
   /// Generates the content of a valid pubspec.yaml file with the passed
   /// packages as dependencies.
   /// Packages are filtered against the allowlist (see allowedPackages).
-  static String getPubspec(Iterable<String> packages) {
+  static String getPubspec(List<String> packages) {
+    if (packages.contains("just_audio")) {
+      //Windows/linux implementation
+      packages.add("just_audio_libwinmedia");
+    }
     return [
       //TODO use actual app name (and about text?)
       "name: xaif_project",
