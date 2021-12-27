@@ -82,6 +82,14 @@ class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
     if (Platform.isLinux) BuildTarget.linux,
   ];
 
+  // The directory selected by the user to create the project directory in
+  int selectedDir = 0;
+  final dirPathSystemTemp = Directory.systemTemp.absolute.path;
+  final dirPathAtExecutable = Platform.resolvedExecutable.substring(
+          0, Platform.resolvedExecutable.lastIndexOf(Platform.pathSeparator)) +
+      Platform.pathSeparator +
+      "xaif_projects";
+
   @override
   void initState() {
     super.initState();
@@ -109,21 +117,61 @@ class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
   @override
   Widget build(BuildContext context) {
     const spacer = SizedBox(height: 10);
+
     return Row(
       children: [
         Expanded(
           child: Column(
             children: [
+              if (dir == null)
+                IntrinsicWidth(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      spacer,
+                      const Text(
+                        "Create new project directory in: ",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      spacer,
+                      RadioListTile<int>(
+                        value: 0,
+                        groupValue: selectedDir,
+                        title: Text(dirPathSystemTemp),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedDir = value!;
+                          });
+                        },
+                      ),
+                      RadioListTile<int>(
+                        value: 1,
+                        groupValue: selectedDir,
+                        title: Text(dirPathAtExecutable),
+                        onChanged: (value) {
+                          setState(() {
+                            selectedDir = value!;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              if (dir == null) Divider(),
               spacer,
               SizedBox(
                   width: 400,
-                  height: code.split("\n").length > 2 ? 50 : 400,
+                  height: code.split("\n").length > 2 ? 50 : 200,
                   child: ElevatedButton(
-                    child: Text("Select AIA file " +
-                        (runningFlutterProcesses.values
-                                .any((process) => process != null)
-                            ? "to update"
-                            : "to run")),
+                    child: Text(
+                      "Select AIA file " +
+                          (dir != null
+                              ? "to update"
+                              : ""),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                     onPressed: () => pickAndHandleAIAFile(context),
                   )),
               spacer,
@@ -553,7 +601,10 @@ class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
   /// Ensures that the working / project directory exists and returns it
   Future<Directory> ensureDirectory() async {
     if (dir == null) {
-      dir = await Directory.systemTemp.createTemp(dirPrefix);
+      dir = await (await Directory(
+                  selectedDir == 1 ? dirPathAtExecutable : dirPathSystemTemp)
+              .create())
+          .createTemp(dirPrefix);
       setState(() {
         dir = dir;
       });
