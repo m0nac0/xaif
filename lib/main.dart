@@ -12,7 +12,9 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:xaif/gui/aia_compiler_widget_web.dart';
 
 import 'gui/aia_compiler_widget_desktop.dart';
 
@@ -85,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: const Center(
-        child: AIAAccepterDesktop(),
+        child: kIsWeb ? AIAAccepterWeb() : AIAAccepterDesktop(),
       ),
     );
   }
