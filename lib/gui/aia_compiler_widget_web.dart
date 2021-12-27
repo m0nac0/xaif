@@ -14,6 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'dart:convert';
+//ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'dart:ui' as ui;
 
@@ -25,14 +26,14 @@ import 'package:flutter/services.dart';
 
 import '../compiler/aia_to_dart_compiler.dart';
 
-class AIAAccepterWeb extends StatefulWidget {
-  const AIAAccepterWeb({Key? key}) : super(key: key);
+class AIAAccepter extends StatefulWidget {
+  const AIAAccepter({Key? key}) : super(key: key);
 
   @override
-  _AIAAccepterWebState createState() => _AIAAccepterWebState();
+  _AIAAccepterState createState() => _AIAAccepterState();
 }
 
-class _AIAAccepterWebState extends State<AIAAccepterWeb> {
+class _AIAAccepterState extends State<AIAAccepter> {
   // DropzoneViewController controller;
   String code = "Select a *.aia file to get started!";
   Widget iframeWidget = Container();
@@ -72,11 +73,7 @@ class _AIAAccepterWebState extends State<AIAAccepterWeb> {
   }
 
   String getIFrameSrc(String code) {
-    print("data:text/html;charset=utf-8," +
-        r'''<html><head><script type="text/javascript" src="https://dartpad.dev/inject_embed.dart.js" defer></script></head><body><pre><code class="language-run-dartpad:theme-light:mode-flutter:width-800:height-800:run-true:split-1">
-      ''' +
-        const HtmlEscape(HtmlEscapeMode.element).convert(code) +
-        '''</code></pre></body></html>''');
+    //ignore: prefer_adjacent_string_concatenation
     return "data:text/html;charset=utf-8," + //class="language-run-dartpad:theme-light:mode-flutter:width-800:height-800:run-true:split-1"
         r'''<html><head><script type="text/javascript" src="https://dartpad.dev/inject_embed.dart.js" defer></script></head><body><pre><code class="language-run-dartpad:theme-light:mode-flutter:width-800:height-800:run-true:split-1">
       ''' +

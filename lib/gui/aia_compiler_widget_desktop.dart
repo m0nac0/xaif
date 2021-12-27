@@ -33,14 +33,14 @@ import '../compiler/aia_to_dart_compiler.dart';
 
 /// A desktop GUI for the AIA to Flutter project transpiler, with functionality
 /// to view the generated Dart code and run/build the Flutter project
-class AIAAccepterDesktop extends StatefulWidget {
-  const AIAAccepterDesktop({Key? key}) : super(key: key);
+class AIAAccepter extends StatefulWidget {
+  const AIAAccepter({Key? key}) : super(key: key);
 
   @override
-  _AIAAccepterDesktopState createState() => _AIAAccepterDesktopState();
+  _AIAAccepterState createState() => _AIAAccepterState();
 }
 
-class _AIAAccepterDesktopState extends State<AIAAccepterDesktop> {
+class _AIAAccepterState extends State<AIAAccepter> {
   static const dirPrefix = "xaif_project";
   static const snackbarDuration = Duration(seconds: 30);
 
