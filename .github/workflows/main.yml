@@ -77,11 +77,11 @@ jobs:
       - uses: subosito/flutter-action@v1.5.3
       - run: flutter config --enable-macos-desktop
       - run: flutter create . --project-name=xaif --platforms=macos
-      - name: flutter build macos
-        run: flutter build macos
+      - name: flutter build macos --release
+        run: flutter build macos --release
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
           name: macos_build
-          path: macos/Runner.xcworkspace
+          path: build/macos/Build/Products/Release
 
