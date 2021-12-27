@@ -68,4 +68,13 @@ jobs:
         with:
           name: linux_build
           path: build/linux/x64/release/bundle
+          
+  build-web:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1.5.3
+      - name: flutter build web
+        run: flutter build web
 
