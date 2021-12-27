@@ -19,15 +19,15 @@ compiled for different operating systems.
 >Important: you will not need to actually write any Flutter code yourself, you just need to have Flutter installed
 so this tool can use it under the hood.
 
->Also important: you only need to install Flutter (and possibly other dependencies) on your development machine.
-Any executables you built can be installed/run on other devices without installing any dependencies. (Just like you can distribute your apk)
+>Also important: you only need to install Flutter (and possibly other dependencies) on *your* development machine.
+Any executables you build can be installed/run on other devices without installing additional dependencies. (Just like you can distribute your apk).
 
 Please follow [Flutter's installation guide](https://docs.flutter.dev/get-started/install) (depending on your computer's operating system). You will need to
 complete the "Get the Flutter SDK" step.
 
 Flutter's setup guides will include additional setup steps (e.g. "Android setup", "Web setup").
 You only need to complete these steps if you want to later compile your app for the respective platforms.
-(I.e., if you want to compile your app into a web app, you need to complete the "Web setup" step).<br>
+(For example, if you want to compile your app into a web app, you need to complete the "Web setup" step).<br>
 
 Make sure that Flutter is correctly set up by running `flutter doctor` in a shell.
 
@@ -46,7 +46,6 @@ guide. E.g. if you want to run xaif on Windows with this approach, you need to f
 installation guide)
 
 2. Alternatively, you should be able to use prebuilt binaries of xaif from the CI. They are available from the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain) (as artifacts). <br>
-Use them at your own responsibility! <br>
 You should be able to use these prebuilt executables to run xaif without completing the "Windows setup" or "Linux setup" step in the Flutter setup, but you still have to complete the basic Flutter setup!
 
 ## Usage Guide
@@ -70,7 +69,7 @@ After you have built an executable you can also launch it (or manually copy it f
 (Under the hood, this uses Flutter's functionality for compiling and running apps.)
 
 Please note that your operating system may at any time delete temporary files, including the project directories
-created by xaif if you choose your system's temporary files directory. If you want to back up the project directory, simply copy it to another location (you can
+created by xaif if you choose your system's temporary files directory as the location of the project directory. If you want to back up the project directory, simply copy it to another location (you can
 see the location of the project directory in xaif).
 
 Please also note that every time you launch xaif, a new project directory is created. If you want to use xaif
