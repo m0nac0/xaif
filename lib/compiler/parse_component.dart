@@ -1173,6 +1173,16 @@ class ComponentParser {
       }
     }
 
+    if (unconstrainedHeight) {
+      if (expandForAutomatic &&
+          height is LiteralExpression &&
+          (height.literal == "-2" || height.literal == "-1")) {
+        return r("Expanded")([], {
+          "child": sizedBox,
+        });
+      }
+    }
+
     return
         // optimizedConditional(
         //   optimizedLiteralEqual(width, literalNum(-2)),
