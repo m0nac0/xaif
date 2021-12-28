@@ -36,15 +36,19 @@ class StatementParser {
       var propertyName = mutation.getAttribute("property_name")!;
       final textVar = instanceName + "_" + propertyName;
       state.ensureFieldExists(textVar);
-
+      var value = expressionParser.parseExpression(
+          block.getElement("value")!.getElement("block")!,
+          parseStatement);
+      if(propertyName == "Text"){
+        value = value.property("toString")([]);
+      }
       if (isSetter) {
         return r("setState")([
           Method((b) => b
             ..body = r(textVar)
-                .assign(expressionParser.parseExpression(
-                    block.getElement("value")!.getElement("block")!,
-                    parseStatement))
-                .statement).closure
+                .assign(value)
+                .statement
+          ).closure
         ]).statement;
       } else {
         return r(textVar).code;
