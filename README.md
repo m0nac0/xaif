@@ -130,7 +130,7 @@ building it in an admin shell!
 - Layout: complete (Change: TableArrangement is scrollable)
 - Media: only Camera, Camcorder, ImagePicker, Player, VideoPlayer
     - Completed event does not fire for Player, VideoPlayer
-    - VideoPlayer only supports network files (http:// or https:// URLs)
+    - VideoPlayer only supported on Android/iOS/web and only supports network files (http:// or https:// URLs)
 - Drawing/Animation: none
 - Maps: none
 - Sensors: only Clock (limited)
