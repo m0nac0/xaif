@@ -1254,9 +1254,9 @@ class ComponentParser {
             "child": r("ListView").newInstance([], {
               "shrinkWrap": ltrue,
               "children": literalList([
-                r("Center").newInstance([
-                  r("Text").newInstance([title])
-                ]),
+                r("Center").newInstance([], {
+                  "child": r("Text").newInstance([title])
+                }),
                 r(getPropertyDartName(componentName, "Elements"))
                     .property("map")([
                       Method((m) => m
