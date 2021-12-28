@@ -16,42 +16,55 @@ Flutter is an open-source cross-platform app development framework. This tool is
 importantly this tool will transpile your app into an (intermediate) Flutter app, that can then be compiled for
 different operating systems.
 
-> Important: you will not need to actually write any Flutter code yourself, you just need to have Flutter installed so this tool can use it under the hood.
+> Important: you will *not* need to actually write any Flutter code yourself, you just need to have Flutter installed so xaif can use it under the hood.
 
 > Also important: you only need to install Flutter (and possibly other dependencies) on *your* development machine. Any executables you build can be installed/run on other devices without installing additional dependencies. (Just like you can distribute your apk).
 
-Please follow [Flutter's installation guide](https://docs.flutter.dev/get-started/install) (depending on your computer's
-operating system). You will need to complete the "Get the Flutter SDK" step.
+**Basic Flutter setup:** Please follow [Flutter's installation guide](https://docs.flutter.dev/get-started/install) (
+depending on your computer's operating system). You will need to complete the "Get the Flutter SDK" step <br>
 
-Flutter's setup guides will include additional setup steps (e.g. "Android setup", "Web setup"). You only need to
-complete these steps if you want to later compile your app for the respective platforms.
+**Advanced, platform-specific Flutter setup:** Flutter's setup guides will include additional setup steps (e.g. "Android
+setup", "Web setup"). You only need to complete these steps if you want to later compile your app for the respective
+platforms.<br>
 (For example, if you want to compile your app into a web app, you need to complete the "Web setup" step).<br>
 
-Make sure that Flutter is correctly set up by running `flutter doctor` in a shell.
+**After installing Flutter** Make sure that Flutter is correctly set up by running `flutter doctor` in a shell.
 
 ## Download
 
-**Please note that xaif has only undergone (limited) testing on Windows and Linux (Ubuntu). It should in theory also
-work on macOS, but this hasn't been tested, yet.**
+Please note that xaif has only undergone (limited) testing on Windows and Linux (Ubuntu). It should in theory also work
+on macOS, but this hasn't been tested, yet.
 
-To get xaif, you have two options:
+**To get xaif**, you have two options (plus one other fallback option):
 
-1. You can either clone this repository with git or download it as a zip-file from Github (green button titled "Code")
-   and unzip it to any location.<br>
-   Then open a shell in the location where you cloned/unzipped the repository and run `flutter run -d windows` (if your
-   computer is running Windows) or `flutter run -d linux` (if your computer is running Linux).<br>
-   (This will require you to have followed the *additional* setup steps for your operating system in the Flutter
-   installation guide. So if you want to run xaif on Windows with this approach, you need to *also* follow
-   the ["Windows setup" step](https://docs.flutter.dev/get-started/install/windows#windows-setup) in the Flutter Windows
-   installation guide, or the ["Linux setup" step](https://docs.flutter.dev/get-started/install/linux#linux-setup) in
-   the Flutter Linux installation guide if you want to run xaif on Linux with this approach)
-
-2. Alternatively, you should be able to use prebuilt binaries of xaif from the CI. They are available from
+1. **Run the source code directly:**
+    1. Either clone this repository with git or download it as a zip-file from GitHub (green button titled "Code")
+       and unzip it to any location.<br>
+    2. Then open a shell in the location where you cloned/unzipped the repository and run `flutter run -d windows` (if
+       your computer is running Windows) or `flutter run -d linux` (if your computer is running Linux).<br>
+       (This first approach will require you to have followed the *additional* setup steps for your computer's operating
+       system in the Flutter installation guide. So if you want to run xaif on Windows with this approach, you need to
+       *also* follow the ["Windows setup" step](https://docs.flutter.dev/get-started/install/windows#windows-setup) in
+       the Flutter Windows installation guide, or
+       the ["Linux setup" step](https://docs.flutter.dev/get-started/install/linux#linux-setup) in the Flutter Linux
+       installation guide if you want to run xaif on Linux with this approach.)
+       <br><br>
+2. **Run prebuilt executables:** <br>
+   Alternatively, you can download and run prebuilt binaries of xaif from the CI. They are available from
    the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or
-   from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain) (
-   as artifacts). <br>
-   You should be able to use these prebuilt executables to run xaif without completing the "Windows setup" or "Linux
-   setup" step in the Flutter setup, but you still have to complete the basic Flutter setup!
+   from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain)
+   (as artifacts). <br>
+   You can use these prebuilt executables to run xaif without completing the "Windows setup" or "Linux setup" step in
+   the Flutter setup, but you still have to complete the basic Flutter setup!
+   <br><br>
+3. **Very limited: run xaif as web app:** <br>
+   *This approach has serious limitations, and it is recommended that you use one of the other two approaches, if
+   possible*<br>
+    1. Either clone this repository with git or download it as a zip-file from GitHub (
+       green button titled "Code")
+       and unzip it to any location.<br>
+    2. Then open a shell in the location where you cloned/unzipped the repository and run `flutter run`. Choose Chrome
+       or Edge as target devices. After a short time, your browser should open and show a web version of xaif.
 
 ## Usage Guide
 
@@ -63,33 +76,36 @@ To get xaif, you have two options:
    different devices or build executables for different platforms
    (operating systems).
 
-The run options are a good choice to quickly test your app on different "devices" (somewhat similar to App Inventor's
-Companion), while building your app results in an executable file (or directory of multiple files), like an APK for
-Android.
+The **run options** are a good choice to quickly test your app on different "devices" (somewhat similar to App
+Inventor's Companion), while **building your app** results in an executable file (or directory of multiple files), like
+an APK for Android.
 
-While your app is running, you can also update the project by selecting a new AIA file (new version of your app). Any
-running instances of your app should update nearly instantly (for web apps, you'll need to reload the page).
+While your app is running, you can also **update the project** by selecting a new AIA file (new version of your app).
+Any running instances of your app should update nearly instantly (for web apps, you'll need to reload the page).
 
 After you have built an executable you can also launch it (or manually copy it from the project directory to store it).
 
 (Under the hood, this uses Flutter's functionality for compiling and running apps.)
 
-Please note that your operating system may at any time delete temporary files, including the project directories created
+### Additional information
+
+- Please note that your operating system may at any time delete temporary files, including the project directories created
 by xaif if you choose your system's temporary files directory as the location of the project directory. If you want to
 back up the project directory, simply copy it to another location (you can see the location of the project directory in
 xaif).
 
-Please also note that every time you launch xaif, a new project directory is created. If you want to use xaif for
+- Every time you launch xaif, a new project directory is created. If you want to use xaif for
 different projects, it is recommended to close and reopen xaif to actually create a new project directory
 (otherwise the files from the old project are overwritten).
 
-xaif does not delete its project directory, unless you explicitly tell it to. If you want to save storage space you
+- xaif does not delete its project directory, unless you explicitly tell it to. If you want to save storage space you
 should delete project directories that you don't need any longer.
 
-### Available platforms
+### Available target platforms
 
-Depending on your computer's operating system, the choice of platforms will vary. E.g. if you are on a Windows computer,
-you won't be able to compile your app for iOS.
+Depending on your computer's operating system, the choice of target platforms 
+(= the operating systems for which you can compile your project) will vary. For example, if you are on a
+Windows computer, you won't be able to compile your app for iOS.
 
 #### Compiling an *.exe for windows
 
@@ -97,7 +113,7 @@ If you want to build your app for windows (build an exe-file) you may need to
 
 a) Turn on developer mode on your Windows machine (recommended by the Flutter team)
 
-b) OR go to the project directory once (path is displayed in the tool), open an admin command prompt and run
+b) OR go to the project directory once (path is displayed in the tool), open a command prompt as admin and run
 `flutter build windows`
 
 The reason is that this tool uses Flutter plugins for many components, and Flutter cannot (at this time)
@@ -160,7 +176,7 @@ or [discussion](https://github.com/m0nac0/xaif/discussions/new)!
 
 ## Disclaimer
 
-This tool is in an early development phase and not very well tested.
+This tool is in an early development phase and not exhaustively tested.
 
 It is your responsibility to check the code generated by this tool and use this tool with caution.
 
@@ -184,7 +200,7 @@ code, if you use a malicious AIA-file from an attacker.
 
 ## Acknowledgements
 
-A huge thank you to the team at MIT App Inventor, for creating, maintaining and continously improving the App Inventor,
+A huge thank you to the team at **MIT App Inventor**, for creating, maintaining and continuously improving the App Inventor,
 which I consider one of the greatest tools to teach programming and app development!
 
-And similarly thank you to the Flutter team for creating their great cross-platform app development framework!
+And similarly thank you to the **Flutter team** for creating their great cross-platform app development framework!
