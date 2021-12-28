@@ -760,10 +760,6 @@ class StatementParser {
     state.fields[instanceName + "_" + attribute] = null;
     return r(instanceName + "_" + attribute);
   }
-
-  Code wrapWithSetState(Code code) {
-    return r("setState")([Method((d) => d..body = code).closure]).statement;
-  }
 }
 
 enum DialogType { message, choose, password, progress, text }

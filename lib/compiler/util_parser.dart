@@ -112,3 +112,7 @@ Expression wrapCodeWithEmptyLambda(Expression code) {
 
 String getPropertyDartName(String componentName, String prop) =>
     componentName + "_" + prop;
+
+Code wrapWithSetState(Code code) {
+  return r("setState")([Method((d) => d..body = code).closure]).statement;
+}
