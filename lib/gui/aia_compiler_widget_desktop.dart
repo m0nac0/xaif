@@ -83,7 +83,7 @@ class _AIAAccepterState extends State<AIAAccepter> {
   ];
 
   // The directory selected by the user to create the project directory in
-  int selectedDir = 0;
+  int selectedDir = 1;
   final dirPathSystemTemp = Directory.systemTemp.absolute.path;
   final dirPathAtExecutable = Platform.resolvedExecutable.substring(
           0, Platform.resolvedExecutable.lastIndexOf(Platform.pathSeparator)) +
