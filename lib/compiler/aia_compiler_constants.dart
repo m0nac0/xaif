@@ -129,6 +129,17 @@ Map<String, Map<String, Expression>> properties = {
     ...visibleProperties,
     ...sizeProperties,
   },
+  "ListPicker": {
+    "Selection": literalString(""),
+    "ElementsFromString": literalString(""),
+    "Elements": literalList([]),
+    "Title": literalString(""),
+    "ItemBackgroundColor": refer("Colors.white"),
+    "ItemTextColor": refer("Colors.black"),
+    ...labelProperties,
+    ...sizeProperties,
+    ...buttonProperties
+  },
   "ListView": {
     "Elements": literalList(<String>[]),
     "Selection": literalString(""),
@@ -175,6 +186,9 @@ Map<String, List<Event>> events = {
   ],
   "Spinner": [
     Event("AfterSelecting", {"selection": refer("String")}),
+  ],
+  "ListPicker": [
+    Event("AfterPicking"),
   ],
   "ListView": [
     Event("AfterPicking"),

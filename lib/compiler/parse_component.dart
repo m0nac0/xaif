@@ -199,6 +199,60 @@ class ComponentParser {
               unconstrainedWidth,
               unconstrainedHeight);
         }
+      case "ListPicker":
+        {
+          state.fields[propsDartNames["Selection"]!] = literalString("");
+          state.ensureFieldExists(
+              getPropertyDartName(componentName, "Elements"));
+          getDartExpressionForProperty(
+              propsDartNames,
+              "Elements",
+              getComponentStringProperty(component, "ElementsFromString")
+                  ?.property("split")([literalString(",")]),
+              defaultValues);
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "ElementsFromString")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = r(getPropertyDartName(componentName, "Elements"))
+                .assign(r("value").property("split")([literalString(",")]))
+                .statement));
+
+          state.addMethod(
+              componentName,
+              "Open",
+              getListPickerLaunchMethod(
+                componentName,
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "Title",
+                    getComponentStringProperty(component, "Title"),
+                    defaultValues),
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "ItemBackgroundColor",
+                    getComponentColorProperty(component, "ItemBackgroundColor"),
+                    defaultValues),
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "ItemTextColor",
+                    getComponentColorProperty(component, "ItemTextColor"),
+                    defaultValues),
+              ));
+          eventHandlers["Click"] = wrapCodeWithEmptyLambda(
+              r(state.methods[componentName]!["Open"]!.name!)
+                  .call([r("context")]));
+
+          return getDartExpressionForButton(
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight,
+              disableLongPress: true);
+        }
       case "ListView":
         {
           return getListViewDartExpression(propsDartNames, component,
@@ -1172,6 +1226,68 @@ class ComponentParser {
               ..body = Block.of([
                 r(componentName + "_Selection")
                     .assign(r("value.path"))
+                    .statement,
+                safeCallEventHandler(
+                    getDartEventHandler(state, componentName, "AfterPicking"))
+              ])).closure
+          ])
+          .statement);
+  }
+
+  Method getListPickerLaunchMethod(
+    String componentName,
+    Expression title,
+    Expression backgroundColor,
+    Expression textColor,
+  ) {
+    //TODO Filtering, SelectionIndex, title design
+    return Method((b) => b
+      ..name = componentName + "_Open"
+      ..requiredParameters.add(Parameter((p) => p
+        ..name = "context"
+        ..type = r("BuildContext")))
+      ..body = r("showDialog")([], {
+        "context": r("context"),
+        "builder": Method((m) => m
+          ..requiredParameters.add(Parameter((p) => p..name = "_"))
+          ..body = r("Dialog").newInstance([], {
+            "child": r("ListView").newInstance([], {
+              "shrinkWrap": ltrue,
+              "children": literalList([
+                r("Center").newInstance([
+                  r("Text").newInstance([title])
+                ]),
+                r(getPropertyDartName(componentName, "Elements"))
+                    .property("map")([
+                      Method((m) => m
+                        ..requiredParameters
+                            .add(Parameter((p) => p..name = "item"))
+                        ..body = r("ListTile").newInstance([], {
+                          "title": r("Text").newInstance([r("item")]),
+                          "textColor": textColor,
+                          "tileColor": backgroundColor,
+                          "onTap": Method((n) => n
+                            ..body =
+                                r("Navigator.pop")([r("context"), r("item")])
+                                    .statement).closure
+                        }).code
+                        ..lambda = true).closure
+                    ])
+                    .property("toList")([])
+                    .spread
+              ])
+            })
+          }).code
+          ..lambda = true).closure
+      })
+          .property("then")([
+            Method((b) => b
+              ..requiredParameters.add(Parameter((p) => p..name = "value"))
+              ..body = Block.of([
+                // Prevent exception if picking was canceled
+                const Code("if(value==null){return;}"),
+                r(getPropertyDartName(componentName, "Selection"))
+                    .assign(r("value"))
                     .statement,
                 safeCallEventHandler(
                     getDartEventHandler(state, componentName, "AfterPicking"))
