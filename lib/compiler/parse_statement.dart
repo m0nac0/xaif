@@ -37,18 +37,13 @@ class StatementParser {
       final textVar = instanceName + "_" + propertyName;
       state.ensureFieldExists(textVar);
       var value = expressionParser.parseExpression(
-          block.getElement("value")!.getElement("block")!,
-          parseStatement);
-      if(propertyName == "Text"){
+          block.getElement("value")!.getElement("block")!, parseStatement);
+      if (propertyName == "Text") {
         value = value.property("toString")([]);
       }
       if (isSetter) {
         return r("setState")([
-          Method((b) => b
-            ..body = r(textVar)
-                .assign(value)
-                .statement
-          ).closure
+          Method((b) => b..body = r(textVar).assign(value).statement).closure
         ]).statement;
       } else {
         return r(textVar).code;
@@ -285,6 +280,38 @@ class StatementParser {
                 ..body = r(getPropertyDartName(instanceName, "Player"))
                     .property("seek")([r("Duration").newInstance([])])
                     .statement).closure
+            ])
+            .statement;
+      }
+    } else if (componentType == "VideoPlayer") {
+      if (methodName == "Start") {
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("play")([])
+            .statement;
+      } else if (methodName == "Pause") {
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("pause")([])
+            .statement;
+      } else if (methodName == "Stop") {
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("pause")([])
+            .property("then")([
+              Method((b) => b
+                ..requiredParameters.add(Parameter((p) => p..name = "_"))
+                ..body = r(getPropertyDartName(instanceName, "Controller"))
+                    .property("seekTo")([r("Duration").newInstance([])])
+                    .statement).closure
+            ])
+            .statement;
+      } else if (methodName == "SeekTo") {
+        state.usesEnsureNum = true;
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("seekTo")([
+              r("Duration").newInstance([], {
+                "milliseconds": r("ensureNum")([
+                  expressionParser.parseArgExpression(block, 0, parseStatement)
+                ])
+              })
             ])
             .statement;
       }

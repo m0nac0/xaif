@@ -245,6 +245,13 @@ class ExpressionParser {
         return r("jsonDecode", convertPackage)(
             [parseArgExpression(block, 0, parseStatement)]);
       }
+    } else if (componentType == "VideoPlayer") {
+      if (methodName == "GetDuration") {
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("value")
+            .property("duration")
+            .property("inMilliseconds");
+      }
     }
     return literalString(
         "component expression not found $instanceName:$methodName!");

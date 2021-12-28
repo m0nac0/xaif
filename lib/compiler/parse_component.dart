@@ -248,6 +248,57 @@ class ComponentParser {
               unconstrainedWidth,
               unconstrainedHeight);
         }
+      case "VideoPlayer":
+        {
+          //TODO: support asset files
+          var controllerName = getPropertyDartName(componentName, "Controller");
+          state.fields[controllerName] =
+              r("VideoPlayerController").newInstanceNamed("network", [
+            getComponentStringProperty(component, "Source") ??
+                defaultValues[getPropertyDartName(componentName, "Source")]!
+          ]).cascade("initialize")([]); // the official example calls setState
+          // (to ensure the preview is loaded?). This could only be done in
+          // initState.
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = getPropertyDartName(componentName, "Source")
+            ..returns = r("String")
+            ..body = r(controllerName).property("dataSource").code
+            ..lambda = true));
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Source")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = wrapWithSetState(r(controllerName)
+                .assign(r("VideoPlayerController").newInstanceNamed(
+                    "network", [r("value")]).cascade("initialize")([]))
+                .statement)));
+          state.usesEnsureNum = true;
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Volume")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = r(controllerName)
+                .property("setVolume")([
+                  r("ensureNum")([r("value")]).operatorDivide(literalNum(100.0))
+                ])
+                .code
+            ..lambda = true));
+          return maybeVisible(
+              propsDartNames,
+              component,
+              defaultValues,
+              getSizedComponentDartExpression(
+                  propsDartNames,
+                  component,
+                  defaultValues,
+                  r("VideoPlayer", videoPlayerPackage)
+                      .newInstance([r(controllerName)]),
+                  unconstrainedWidth,
+                  unconstrainedHeight,
+                  expandForAutomatic: true));
+        }
       case "Clock":
         {
           return null;

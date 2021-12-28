@@ -141,6 +141,13 @@ Map<String, Map<String, Expression>> properties = {
     "Source": literalString(""),
     "Volume": literalNum(50),
   },
+  "VideoPlayer": {
+    "FullScreen": lfalse,
+    "Source": literalString(""),
+    "Volume": literalNum(50),
+    ...visibleProperties,
+    ...sizeProperties,
+  },
   "PhoneCall": {"PhoneNumber": literalString("")},
   "Texting": {
     "PhoneNumber": literalString(""),
@@ -173,6 +180,9 @@ Map<String, List<Event>> events = {
     Event("AfterPicking"),
   ],
   "Player": [
+    Event("Completed"),
+  ],
+  "VideoPlayer": [
     Event("Completed"),
   ],
   "File": [
