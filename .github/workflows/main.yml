@@ -78,7 +78,10 @@ jobs:
       - run: flutter pub get
       - run: flutter pub global activate peanut
       - run: |
-          git config --global user.email "CI@example.com"
+          git config --global user.email "CI@localhost"
           git config --global user.name "GH Actions CI"
-      - run: flutter pub global run peanut -b test-web-2
+          flutter build web
+          git add -f build/web
+          git commit -m "web build: ${{ github.event.commits[0].message }}"
+          git push --force origin HEAD:web-build-test
 
