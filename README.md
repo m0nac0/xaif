@@ -35,7 +35,8 @@ platforms.<br>
 Please note that xaif has only undergone (limited) testing on Windows and Linux (Ubuntu). It should in theory also work
 on macOS, but this hasn't been tested, yet.
 
-**To get xaif**, you have two options (plus one other fallback option):
+**To get xaif**, you have two recommended options (plus two other fallback options).<br>
+**Choose one**:
 
 1. **Run the source code directly:**
     1. Either clone this repository with git or download it as a zip-file from GitHub (green button titled "Code")
@@ -48,7 +49,7 @@ on macOS, but this hasn't been tested, yet.
        the Flutter Windows installation guide, or
        the ["Linux setup" step](https://docs.flutter.dev/get-started/install/linux#linux-setup) in the Flutter Linux
        installation guide if you want to run xaif on Linux with this approach.)
-       <br><br>
+           <br><br>
 2. **Run prebuilt executables:** <br>
    Alternatively, you can download and run prebuilt binaries of xaif from the CI. They are available from
    the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or
@@ -56,15 +57,28 @@ on macOS, but this hasn't been tested, yet.
    (as artifacts). <br>
    You can use these prebuilt executables to run xaif without completing the "Windows setup" or "Linux setup" step in
    the Flutter setup, but you still have to complete the basic Flutter setup!
-   <br><br>
-3. **Very limited: run xaif as web app:** <br>
-   *This approach has serious limitations, and it is recommended that you use one of the other two approaches, if
+    <br><br>
+3. **Very limited: run xaif as web app from source:** <br>
+   *This approach has serious limitations, and it is recommended that you use one of first other two approaches, if
    possible*<br>
     1. Either clone this repository with git or download it as a zip-file from GitHub (
        green button titled "Code")
        and unzip it to any location.<br>
     2. Then open a shell in the location where you cloned/unzipped the repository and run `flutter run`. Choose Chrome
        or Edge as target devices. After a short time, your browser should open and show a web version of xaif.
+        <br><br>
+ 4. **Very limited: run xaif as pre-built web app:** <br>
+   *This approach has serious limitations, and it is recommended that you use one of the first two approaches, if
+   possible.*<br>
+   *This fourth approach is the only approach not requiring you to have Flutter installed.*
+    1. Download and unzip a web build of xaif from the CI. They are called `build_web.zip` and are available from
+   the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or
+   from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain)
+   (as artifacts). <br>
+    2. Then run a local development web server in the directory where you unzipped the web_build. For example, if you have
+    Python 3 installed, you could run `python -m http.server 8000`. You can find a list of different commands to start such
+    a local web server [here](https://gist.github.com/willurd/5720255)
+    3. Open your browser and to go the adress of the web server you just started, for example `localhost:8000`
 
 ## Usage Guide
 
@@ -142,7 +156,7 @@ building it in an admin shell!
 
 ### Components (including their methods)
 
-- UI: complete except ListPicker, WebViewer & possibly some attributes on some components.
+- UI: complete except WebViewer & possibly some attributes on some components.
 - Layout: complete (Change: TableArrangement is scrollable)
 - Media: only Camera, Camcorder, ImagePicker, Player, VideoPlayer
     - Completed event does not fire for Player, VideoPlayer
