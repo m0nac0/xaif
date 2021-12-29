@@ -24,11 +24,12 @@ class PubspecBuilder {
     "shared_preferences",
     "url_launcher",
     "image_picker",
+    "video_player",
     //Third-party packages
     "share_plus",
     "just_audio",
     "just_audio_libwinmedia",
-    "video_player",
+
   ];
 
   /// Generates the content of a valid pubspec.yaml file with the passed
