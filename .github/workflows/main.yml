@@ -77,6 +77,7 @@ jobs:
       - uses: subosito/flutter-action@v1.5.3
       - name: flutter build web
         run: flutter build web
+      - run: cp LICENSE build/web
       - name: Upload web Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
