@@ -78,7 +78,7 @@ jobs:
       - run: flutter pub get
       - run: flutter pub global activate peanut
       - run: |
-          git config user.email "CI@example.com"
-          git config user.name "GH Actions CI"
+          git config --global user.email "CI@example.com"
+          git config --global user.name "GH Actions CI"
       - run: flutter pub global run peanut -b test-web-2
 
