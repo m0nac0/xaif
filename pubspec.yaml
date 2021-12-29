@@ -20,7 +20,7 @@ description: A tool to compile apps created with MIT App Inventor for different 
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.2.0
+version: 0.3.0
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
