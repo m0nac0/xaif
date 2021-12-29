@@ -46,7 +46,7 @@ jobs:
           copy C:\Windows\System32\vcruntime140.dll build\windows\runner\Release\
           copy C:\Windows\System32\vcruntime140_1.dll build\windows\runner\Release\
           copy LICENSE build\windows\runner\Release\
-      - name: Upload a Build Artifact
+      - name: Upload Windows Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
           name: windows_build
@@ -63,7 +63,7 @@ jobs:
       - name: flutter build linux
         run: flutter build linux
       - run: cp LICENSE build/linux/x64/release/bundle
-      - name: Upload a Build Artifact
+      - name: Upload Linux Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
           name: linux_build
@@ -77,4 +77,9 @@ jobs:
       - uses: subosito/flutter-action@v1.5.3
       - name: flutter build web
         run: flutter build web
+      - name: Upload web Build Artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: web_build
+          path: build/web
 
