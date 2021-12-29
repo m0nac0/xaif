@@ -77,5 +77,8 @@ jobs:
       - uses: subosito/flutter-action@v1.5.3
       - run: flutter pub get
       - run: flutter pub global activate peanut
+      - run: |
+          git config user.email "CI@example.com"
+          git config user.name "GH Actions CI"
       - run: flutter pub global run peanut -b test-web-2
 
