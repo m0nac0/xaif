@@ -28,6 +28,7 @@ const lfalse = literalFalse;
 const materialPackage = "package:flutter/material.dart";
 const mathPackage = "dart:math";
 const convertPackage = "dart:convert";
+const asyncPackage = "dart:async";
 
 // packages supported by Dart/Flutter team
 const httpPackage = "package:http/http.dart";
@@ -36,6 +37,8 @@ const xfilePackage = "package:cross_file/cross_file.dart";
 const sharedPrefsPackage = "package:shared_preferences/shared_preferences.dart";
 const urlLauncherPackage = "package:url_launcher/url_launcher.dart";
 const imagePickerPackage = "package:image_picker/image_picker.dart";
+const videoPlayerPackage = "package:video_player/video_player.dart";
+const intlPackage = "package:intl/intl.dart";
 
 //Third party packages
 // WHEN USING NEW PACKAGE: add to template; check license etc. const justAudioPackage = "package:just_audio/just_audio.dart";
@@ -112,3 +115,7 @@ Expression wrapCodeWithEmptyLambda(Expression code) {
 
 String getPropertyDartName(String componentName, String prop) =>
     componentName + "_" + prop;
+
+Code wrapWithSetState(Code code) {
+  return r("setState")([Method((d) => d..body = code).closure]).statement;
+}

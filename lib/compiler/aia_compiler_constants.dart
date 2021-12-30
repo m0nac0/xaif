@@ -129,6 +129,17 @@ Map<String, Map<String, Expression>> properties = {
     ...visibleProperties,
     ...sizeProperties,
   },
+  "ListPicker": {
+    "Selection": literalString(""),
+    "ElementsFromString": literalString(""),
+    "Elements": literalList([]),
+    "Title": literalString(""),
+    "ItemBackgroundColor": refer("Colors.white"),
+    "ItemTextColor": refer("Colors.black"),
+    ...labelProperties,
+    ...sizeProperties,
+    ...buttonProperties
+  },
   "ListView": {
     "Elements": literalList(<String>[]),
     "Selection": literalString(""),
@@ -140,6 +151,19 @@ Map<String, Map<String, Expression>> properties = {
     "Loop": lfalse,
     "Source": literalString(""),
     "Volume": literalNum(50),
+  },
+  "VideoPlayer": {
+    "FullScreen": lfalse,
+    "Source": literalString(""),
+    "Volume": literalNum(50),
+    ...visibleProperties,
+    ...sizeProperties,
+  },
+  "Clock": {
+    "TimerEnabled": ltrue,
+    "TimerInterval": literalNum(1000),
+    //TODO implement TimerAlwaysFires
+    "TimerAlwaysFires": ltrue,
   },
   "PhoneCall": {"PhoneNumber": literalString("")},
   "Texting": {
@@ -169,11 +193,20 @@ Map<String, List<Event>> events = {
   "Spinner": [
     Event("AfterSelecting", {"selection": refer("String")}),
   ],
+  "ListPicker": [
+    Event("AfterPicking"),
+  ],
   "ListView": [
     Event("AfterPicking"),
   ],
   "Player": [
     Event("Completed"),
+  ],
+  "VideoPlayer": [
+    Event("Completed"),
+  ],
+  "Clock": [
+    Event("Timer"),
   ],
   "File": [
     Event("AfterFileSaved", {"fileName": refer("String")}),

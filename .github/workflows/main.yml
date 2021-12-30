@@ -4,7 +4,6 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ main, test-web ]
   pull_request:
     branches: [ main ]
 
@@ -46,7 +45,7 @@ jobs:
           copy C:\Windows\System32\vcruntime140.dll build\windows\runner\Release\
           copy C:\Windows\System32\vcruntime140_1.dll build\windows\runner\Release\
           copy LICENSE build\windows\runner\Release\
-      - name: Upload a Build Artifact
+      - name: Upload Windows Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
           name: windows_build
@@ -63,25 +62,39 @@ jobs:
       - name: flutter build linux
         run: flutter build linux
       - run: cp LICENSE build/linux/x64/release/bundle
-      - name: Upload a Build Artifact
+      - name: Upload Linux Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
           name: linux_build
           path: build/linux/x64/release/bundle
-          
-  build-web:
-    runs-on: ubuntu-latest
-    
+
+  build-macos:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1.5.3
-      - run: flutter pub get
-      - run: flutter pub global activate peanut
-      - run: |
-          git config --global user.email "CI@localhost"
-          git config --global user.name "GH Actions CI"
-          flutter build web
-          git add -f build/web
-          git commit -m "web build: ${{ github.event.commits[0].message }}"
-          git push --force origin HEAD:web-build-test
+      - run: flutter config --enable-macos-desktop
+      # - run: flutter create . --project-name=xaif --platforms=macos
+      - name: flutter build macos --release
+        run: flutter build macos --release
+      - run: cp LICENSE build/macos/Build/Products/Release
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: macos_build
+          path: build/macos/Build/Products/Release
+
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1.5.3
+      - name: flutter build web
+        run: flutter build web
+      - run: cp LICENSE build/web
+      - name: Upload web Build Artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: web_build
+          path: build/web
 

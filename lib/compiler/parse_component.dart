@@ -199,6 +199,60 @@ class ComponentParser {
               unconstrainedWidth,
               unconstrainedHeight);
         }
+      case "ListPicker":
+        {
+          state.fields[propsDartNames["Selection"]!] = literalString("");
+          state.ensureFieldExists(
+              getPropertyDartName(componentName, "Elements"));
+          getDartExpressionForProperty(
+              propsDartNames,
+              "Elements",
+              getComponentStringProperty(component, "ElementsFromString")
+                  ?.property("split")([literalString(",")]),
+              defaultValues);
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "ElementsFromString")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = r(getPropertyDartName(componentName, "Elements"))
+                .assign(r("value").property("split")([literalString(",")]))
+                .statement));
+
+          state.addMethod(
+              componentName,
+              "Open",
+              getListPickerLaunchMethod(
+                componentName,
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "Title",
+                    getComponentStringProperty(component, "Title"),
+                    defaultValues),
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "ItemBackgroundColor",
+                    getComponentColorProperty(component, "ItemBackgroundColor"),
+                    defaultValues),
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "ItemTextColor",
+                    getComponentColorProperty(component, "ItemTextColor"),
+                    defaultValues),
+              ));
+          eventHandlers["Click"] = wrapCodeWithEmptyLambda(
+              r(state.methods[componentName]!["Open"]!.name!)
+                  .call([r("context")]));
+
+          return getDartExpressionForButton(
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight,
+              disableLongPress: true);
+        }
       case "ListView":
         {
           return getListViewDartExpression(propsDartNames, component,
@@ -248,8 +302,103 @@ class ComponentParser {
               unconstrainedWidth,
               unconstrainedHeight);
         }
+      case "VideoPlayer":
+        {
+          //TODO: support asset files
+          var controllerName = getPropertyDartName(componentName, "Controller");
+          state.fields[controllerName] =
+              r("VideoPlayerController").newInstanceNamed("network", [
+            getComponentStringProperty(component, "Source") ??
+                defaultValues[getPropertyDartName(componentName, "Source")]!
+          ]).cascade("initialize")([]); // the official example calls setState
+          // (to ensure the preview is loaded?). This could only be done in
+          // initState.
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = getPropertyDartName(componentName, "Source")
+            ..returns = r("String")
+            ..body = r(controllerName).property("dataSource").code
+            ..lambda = true));
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Source")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = wrapWithSetState(r(controllerName)
+                .assign(r("VideoPlayerController").newInstanceNamed(
+                    "network", [r("value")]).cascade("initialize")([]))
+                .statement)));
+          state.usesEnsureNum = true;
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Volume")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = r(controllerName)
+                .property("setVolume")([
+                  r("ensureNum")([r("value")]).operatorDivide(literalNum(100.0))
+                ])
+                .code
+            ..lambda = true));
+          return maybeVisible(
+              propsDartNames,
+              component,
+              defaultValues,
+              getSizedComponentDartExpression(
+                  propsDartNames,
+                  component,
+                  defaultValues,
+                  r("VideoPlayer", videoPlayerPackage)
+                      .newInstance([r(controllerName)]),
+                  unconstrainedWidth,
+                  unconstrainedHeight,
+                  expandForAutomatic: true));
+        }
       case "Clock":
         {
+          var timer = getPropertyDartName(componentName, "Timer");
+          var timerEnabled = getPropertyDartName(componentName, "TimerEnabled");
+          state.ensureFieldExists(timer);
+
+          state.addInitStateStatement(wrapWithSetState(r(timerEnabled)
+              .assign(getComponentBoolProperty(component, "TimerEnabled") ??
+                  defaultValues[
+                      getPropertyDartName(componentName, "TimerEnabled")]!)
+              .statement));
+
+          // get TimerEnabled => Timer != null;
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = timerEnabled
+            ..returns = r("bool")
+            ..body = r(timer).notEqualTo(literalNull).code
+            ..lambda = true));
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = timerEnabled
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = Block.of([
+              r(timer).nullSafeProperty("cancel")([]).statement,
+              r(timer)
+                  .assign(r("value").conditional(
+                      r("Timer.periodic", asyncPackage)([
+                        r("Duration")([], {
+                          "milliseconds": getDartExpressionForProperty(
+                              propsDartNames,
+                              "TimerInterval",
+                              getComponentNumProperty(
+                                  component, "TimerInterval"),
+                              defaultValues)
+                        }),
+                        Method((m) => m
+                          ..requiredParameters
+                              .add(Parameter((p) => p..name = "_"))
+                          ..body = safeCallEventHandler(getDartEventHandler(
+                              state, componentName, "Timer"))).closure
+                      ]),
+                      literalNull))
+                  .statement
+            ])));
           return null;
         }
       case "Player":
@@ -1129,6 +1278,68 @@ class ComponentParser {
           .statement);
   }
 
+  Method getListPickerLaunchMethod(
+    String componentName,
+    Expression title,
+    Expression backgroundColor,
+    Expression textColor,
+  ) {
+    //TODO Filtering, SelectionIndex, title design
+    return Method((b) => b
+      ..name = componentName + "_Open"
+      ..requiredParameters.add(Parameter((p) => p
+        ..name = "context"
+        ..type = r("BuildContext")))
+      ..body = r("showDialog")([], {
+        "context": r("context"),
+        "builder": Method((m) => m
+          ..requiredParameters.add(Parameter((p) => p..name = "_"))
+          ..body = r("Dialog").newInstance([], {
+            "child": r("ListView").newInstance([], {
+              "shrinkWrap": ltrue,
+              "children": literalList([
+                r("Center").newInstance([], {
+                  "child": r("Text").newInstance([title])
+                }),
+                r(getPropertyDartName(componentName, "Elements"))
+                    .property("map")([
+                      Method((m) => m
+                        ..requiredParameters
+                            .add(Parameter((p) => p..name = "item"))
+                        ..body = r("ListTile").newInstance([], {
+                          "title": r("Text").newInstance([r("item")]),
+                          "textColor": textColor,
+                          "tileColor": backgroundColor,
+                          "onTap": Method((n) => n
+                            ..body =
+                                r("Navigator.pop")([r("context"), r("item")])
+                                    .statement).closure
+                        }).code
+                        ..lambda = true).closure
+                    ])
+                    .property("toList")([])
+                    .spread
+              ])
+            })
+          }).code
+          ..lambda = true).closure
+      })
+          .property("then")([
+            Method((b) => b
+              ..requiredParameters.add(Parameter((p) => p..name = "value"))
+              ..body = Block.of([
+                // Prevent exception if picking was canceled
+                const Code("if(value==null){return;}"),
+                r(getPropertyDartName(componentName, "Selection"))
+                    .assign(r("value"))
+                    .statement,
+                safeCallEventHandler(
+                    getDartEventHandler(state, componentName, "AfterPicking"))
+              ])).closure
+          ])
+          .statement);
+  }
+
   /// Creates a dart expression that wraps a component in a SizedBox, with
   /// width and height set accordingly.
   Expression getSizedComponentDartExpression(
@@ -1167,6 +1378,16 @@ class ComponentParser {
       if (expandForAutomatic &&
           width is LiteralExpression &&
           (width.literal == "-2" || width.literal == "-1")) {
+        return r("Expanded")([], {
+          "child": sizedBox,
+        });
+      }
+    }
+
+    if (unconstrainedHeight) {
+      if (expandForAutomatic &&
+          height is LiteralExpression &&
+          (height.literal == "-2" || height.literal == "-1")) {
         return r("Expanded")([], {
           "child": sizedBox,
         });
