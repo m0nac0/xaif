@@ -94,7 +94,7 @@ jobs:
       - run: cp LICENSE build/web
       - run: |
           cd build/web
-          python -m http.server &
+          python3 -m http.server &
           npm install -g inliner
           inliner localhost:8000 > index.html
           git config user.email "CI@localhost.com"
