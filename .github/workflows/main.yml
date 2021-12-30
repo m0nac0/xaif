@@ -78,6 +78,7 @@ jobs:
       # - run: flutter create . --project-name=xaif --platforms=macos
       - name: flutter build macos --release
         run: flutter build macos --release
+      - run: cp LICENSE build/macos/Build/Products/Release
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
