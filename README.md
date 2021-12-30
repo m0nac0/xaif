@@ -44,12 +44,12 @@ on macOS, but this hasn't been tested, yet.
     2. Then open a shell in the location where you cloned/unzipped the repository and run <br>`flutter run -d windows` (if
        your computer is running Windows) <br>or `flutter run -d linux` (if your computer is running Linux)<br> or 
        `flutter run -d macos` (if your computer is running macOS).<br>
-       (This first approach will require you to have followed the *additional* setup steps for your computer's operating
+       (This first approach will require you to have followed not only the "Basic Flutter setup", but also the *additional* setup steps for your computer's operating
        system in the Flutter installation guide. So if you want to run xaif with this approach, you need to
        *also* follow the <br>["Windows setup" step](https://docs.flutter.dev/get-started/install/windows#windows-setup) in
        the Flutter Windows installation guide if your computer is running Windows,<br> or
        the ["Linux setup" step](https://docs.flutter.dev/get-started/install/linux#linux-setup) in the Flutter Linux
-       installation guide if your computer is running Linux <br>
+       installation guide if your computer is running Linux, <br>
        or the ["macOS setup" step](https://docs.flutter.dev/get-started/install/macos#macos-setup) in the Flutter Linux
        installation guide if your computer is running macOS.)
        <br><br>
