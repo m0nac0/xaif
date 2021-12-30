@@ -36,15 +36,14 @@ class StatementParser {
       var propertyName = mutation.getAttribute("property_name")!;
       final textVar = instanceName + "_" + propertyName;
       state.ensureFieldExists(textVar);
-
+      var value = expressionParser.parseExpression(
+          block.getElement("value")!.getElement("block")!, parseStatement);
+      if (propertyName == "Text") {
+        value = value.property("toString")([]);
+      }
       if (isSetter) {
         return r("setState")([
-          Method((b) => b
-            ..body = r(textVar)
-                .assign(expressionParser.parseExpression(
-                    block.getElement("value")!.getElement("block")!,
-                    parseStatement))
-                .statement).closure
+          Method((b) => b..body = r(textVar).assign(value).statement).closure
         ]).statement;
       } else {
         return r(textVar).code;
@@ -129,9 +128,9 @@ class StatementParser {
       Code do0 =
           parseStatement(findBlockOfXMLChildByName(block, "DO", "statement"));
 
-      return Code("for(" +
+      return Code("for(var " +
           findXMLChildByName(block, "VAR", "field").innerText +
-          ":" +
+          " in " +
           list.accept(emitter).toString() +
           "){" +
           do0.accept(emitter).toString() +
@@ -263,6 +262,59 @@ class StatementParser {
       return parseStatementDatePickerMethod(methodName, instanceName, block);
     } else if (componentType == "TimePicker") {
       return parseStatementTimePickerMethod(methodName, instanceName, block);
+    } else if (componentType == "Player") {
+      if (methodName == "Start") {
+        return r(getPropertyDartName(instanceName, "Player"))
+            .property("play")([])
+            .statement;
+      } else if (methodName == "Pause") {
+        return r(getPropertyDartName(instanceName, "Player"))
+            .property("pause")([])
+            .statement;
+      } else if (methodName == "Stop") {
+        return r(getPropertyDartName(instanceName, "Player"))
+            .property("pause")([])
+            .property("then")([
+              Method((b) => b
+                ..requiredParameters.add(Parameter((p) => p..name = "_"))
+                ..body = r(getPropertyDartName(instanceName, "Player"))
+                    .property("seek")([r("Duration").newInstance([])])
+                    .statement).closure
+            ])
+            .statement;
+      }
+    } else if (componentType == "VideoPlayer") {
+      if (methodName == "Start") {
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("play")([])
+            .statement;
+      } else if (methodName == "Pause") {
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("pause")([])
+            .statement;
+      } else if (methodName == "Stop") {
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("pause")([])
+            .property("then")([
+              Method((b) => b
+                ..requiredParameters.add(Parameter((p) => p..name = "_"))
+                ..body = r(getPropertyDartName(instanceName, "Controller"))
+                    .property("seekTo")([r("Duration").newInstance([])])
+                    .statement).closure
+            ])
+            .statement;
+      } else if (methodName == "SeekTo") {
+        state.usesEnsureNum = true;
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("seekTo")([
+              r("Duration").newInstance([], {
+                "milliseconds": r("ensureNum")([
+                  expressionParser.parseArgExpression(block, 0, parseStatement)
+                ])
+              })
+            ])
+            .statement;
+      }
     } else if (componentType == "Notifier") {
       return parseStatementNotifierMethod(methodName, block, instanceName);
     } else if (componentType == "PhoneCall" && methodName == "MakePhoneCall") {
@@ -318,6 +370,73 @@ class StatementParser {
       return parseStatementTinyDBMethod(methodName, block, instanceName);
     } else if (componentType == "TinyWebDB") {
       return parseStatementTinyWebDBMethod(methodName, block, instanceName);
+    } else if (componentType == "Web") {
+      if (methodName == "Get" || methodName == "Delete") {
+        var url = getExpressionForAttribute(instanceName, "Url");
+        var httpMethod = methodName.toLowerCase();
+        return r(httpMethod, httpPackage)([
+          r("Uri.parse")([url])
+        ], {})
+            .property("then")([
+              Method((b) => b
+                ..requiredParameters.add(Parameter((p) => p..name = "response"))
+                ..body = Block.of([
+                  safeCallEventHandler(
+                      getDartEventHandler(state, instanceName, "GotText"), [
+                    url,
+                    r("response.statusCode"),
+                    literalString(httpMethod),
+                    r("response.body")
+                  ])
+                ])).closure
+            ])
+            .statement;
+      } else if (methodName == "PostText" ||
+          methodName == "PostTextWithEncoding" ||
+          methodName == "PutText" ||
+          methodName == "PutTextWithEncoding" ||
+          methodName == "PatchText" ||
+          methodName == "PatchTextWithEncoding") {
+        Expression text =
+            expressionParser.parseArgExpression(block, 0, parseStatement);
+        Expression? encoding = methodName.endsWith("WithEncoding")
+            ? r("Encoding.getByName")(
+                [expressionParser.parseArgExpression(block, 1, parseStatement)])
+            : null;
+        String httpMethod = methodName.startsWith("Post")
+            ? "post"
+            : (methodName.startsWith("Put") ? "put" : "patch");
+        var url = getExpressionForAttribute(instanceName, "Url");
+        return r(httpMethod, httpPackage)([
+          r("Uri.parse")([url])
+        ], {
+          "body": text,
+          if (encoding != null) "encoding": encoding,
+        })
+            .property("then")([
+              Method((b) => b
+                ..requiredParameters.add(Parameter((p) => p..name = "response"))
+                ..body = Block.of([
+                  safeCallEventHandler(
+                      getDartEventHandler(state, instanceName, "GotText"), [
+                    url,
+                    r("response.statusCode"),
+                    literalString(httpMethod),
+                    r("response.body")
+                  ])
+                ])).closure
+            ])
+            .statement;
+      }
+
+      // if (methodName == "Get") {
+      //   var httpClient = HttpClient();
+      //   httpClient.getUrl(Uri.parse("http://example.com")).then((request) {
+      //     request.close().then((response) {
+      //       final stringData = response.transform(utf8.decoder).join();
+      //     });
+      //   });
+      // }
     }
     return parseStatementComponentMethodError(instanceName, methodName);
   }
@@ -667,10 +786,6 @@ class StatementParser {
   Reference getExpressionForAttribute(String instanceName, String attribute) {
     state.fields[instanceName + "_" + attribute] = null;
     return r(instanceName + "_" + attribute);
-  }
-
-  Code wrapWithSetState(Code code) {
-    return r("setState")([Method((d) => d..body = code).closure]).statement;
   }
 }
 

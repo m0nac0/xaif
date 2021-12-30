@@ -12,6 +12,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:code_builder/code_builder.dart';
 import 'package:xml/xml.dart';
 
@@ -227,9 +228,195 @@ class ExpressionParser {
       return r("sharedPrefs", sharedPrefsPackage).property("getKeys")([]);
     } else if (componentType == "PhoneStatus" && methodName == "isDirect") {
       return r("true/*TODO not implemented*/");
+    } else if (componentType == "Web") {
+      if (methodName == "UriDecode") {
+        return r("Uri.decodeComponent")(
+            [parseArgExpression(block, 0, parseStatement)]);
+      } else if (methodName == "UriEncode") {
+        return r("Uri.encodeComponent")(
+            [parseArgExpression(block, 0, parseStatement)]);
+      } else if (methodName == "HtmlTextDecode") {
+        return r("parseFragment", htmlPackage)(
+            [parseArgExpression(block, 0, parseStatement)]).property("text");
+      } else if (methodName == "JsonObjectEncode") {
+        return r("jsonEncode", convertPackage)(
+            [parseArgExpression(block, 0, parseStatement)]);
+      } else if (methodName == "JsonTextDecode") {
+        return r("jsonDecode", convertPackage)(
+            [parseArgExpression(block, 0, parseStatement)]);
+      }
+    } else if (componentType == "VideoPlayer") {
+      if (methodName == "GetDuration") {
+        return r(getPropertyDartName(instanceName, "Controller"))
+            .property("value")
+            .property("duration")
+            .property("inMilliseconds");
+      } else if (componentType == "Clock") {
+        return parseClockMethodExpression(
+            methodName, block, parseStatement, instanceName);
+      }
     }
     return literalString(
-        "component expression not found $instanceName:$methodName !");
+        "component expression not found $instanceName:$methodName!");
+  }
+
+  Expression parseClockMethodExpression(String? methodName, XmlElement block,
+      Code Function(XmlElement block) parseStatement, String instanceName) {
+    switch (methodName) {
+      case "AddDays":
+      case "AddHours":
+      case "AddMinutes":
+      case "AddSeconds":
+        {
+          var dateTime = parseArgExpression(block, 0, parseStatement);
+          var quantity = parseArgExpression(block, 1, parseStatement);
+          return dateTime.property("add")([
+            r("Duration")(
+                [], {methodName!.substring(3).toLowerCase(): quantity})
+          ]);
+        }
+      case "AddDuration":
+        {
+          var dateTime = parseArgExpression(block, 0, parseStatement);
+          var quantity = parseArgExpression(block, 1, parseStatement);
+          return dateTime.property("add")([
+            r("Duration")([], {"milliseconds": quantity})
+          ]);
+        }
+      case "AddWeeks":
+        {
+          var dateTime = parseArgExpression(block, 0, parseStatement);
+          var weeks = parseArgExpression(block, 1, parseStatement);
+          return dateTime.property("add")([
+            r("Duration")([], {"days": literalNum(7).operatorMultiply(weeks)})
+          ]);
+        }
+      case "AddYears":
+        {
+          var dateTime = parseArgExpression(block, 0, parseStatement);
+          var years = parseArgExpression(block, 1, parseStatement);
+          return r("DateTime").newInstance([
+            dateTime.property("year").operatorAdd(years),
+            dateTime.property("month"),
+            dateTime.property("day"),
+            dateTime.property("hour"),
+            dateTime.property("minute"),
+            dateTime.property("second"),
+            dateTime.property("millisecond"),
+          ]);
+        }
+      case "DayOfMonth":
+        return parseArgExpression(block, 0, parseStatement).property("day");
+      case "Hour":
+      case "Minute":
+      case "Month":
+      case "Second":
+      case "Year":
+        return parseArgExpression(block, 0, parseStatement)
+            .property(methodName!.toLowerCase());
+      case "Weekday":
+        return parseArgExpression(block, 0, parseStatement).property("day");
+      case "WeekdayName":
+        {
+          return r("DateFormat", intlPackage).newInstanceNamed(
+              "EEEE", [parseArgExpression(block, 0, parseStatement)]);
+        }
+      case "MonthName":
+        {
+          return r("DateFormat", intlPackage).newInstanceNamed(
+              "MMMM", [parseArgExpression(block, 0, parseStatement)]);
+        }
+      case "Now":
+        {
+          return r("DateTime.now")([]);
+        }
+      case "FormatDate":
+      case "FormatDateTime":
+      case "FormatTime":
+        var dateTime = parseArgExpression(block, 0, parseStatement);
+        var pattern = parseArgExpression(block, 1, parseStatement);
+        return r("DateFormat", intlPackage)
+            .newInstance([pattern]).property("format")([dateTime]);
+      case "Duration":
+        {
+          return parseArgExpression(block, 0, parseStatement)
+              .property("difference")
+              ([parseArgExpression(block, 1, parseStatement)])
+              .property("inMilliseconds");
+        }
+      case "DurationToDays":
+      case "DurationToHours":
+      case "DurationToMinutes":
+      case "DurationToSeconds":
+        {
+          return r("Duration").newInstance([], {
+            "milliseconds": parseArgExpression(block, 0, parseStatement)
+          }).property("in" + methodName!.substring(10));
+        }
+      case "DurationToWeeks":
+        {
+          return r("Duration")
+              .newInstance([], {
+                "milliseconds": parseArgExpression(block, 0, parseStatement)
+              })
+              .property("inDays")
+              .operatorDivide(literalNum(7));
+        }
+      case "GetMillis":
+        {
+          return parseArgExpression(block, 0, parseStatement)
+              .property("milliseconds");
+        }
+      case "SystemTime":
+        {
+          return r("DateTime.now")([]).property("inMilliseconds");
+        }
+      case "MakeDate":
+        {
+          var year = parseArgExpression(block, 0, parseStatement);
+          var month = parseArgExpression(block, 1, parseStatement);
+          var day = parseArgExpression(block, 2, parseStatement);
+          return r("DateTime").newInstance([year, month, day]);
+        }
+      case "MakeInstant":
+        {
+          return r("DateTime").property("parse")(
+              [parseArgExpression(block, 0, parseStatement)]);
+        }
+      case "MakeInstantFromMillis":
+        {
+          return r("DateTime").newInstanceNamed("fromMillisecondsSinceEpoch",
+              [parseArgExpression(block, 0, parseStatement)]);
+        }
+      case "MakeInstantFromParts":
+        {
+          var year = parseArgExpression(block, 0, parseStatement);
+          var month = parseArgExpression(block, 1, parseStatement);
+          var day = parseArgExpression(block, 2, parseStatement);
+          var hour = parseArgExpression(block, 3, parseStatement);
+          var minute = parseArgExpression(block, 4, parseStatement);
+          var second = parseArgExpression(block, 5, parseStatement);
+          return r("DateTime")
+              .newInstance([year, month, day, hour, minute, second]);
+        }
+      case "MakeTime":
+        {
+          var hour = parseArgExpression(block, 0, parseStatement);
+          var minute = parseArgExpression(block, 1, parseStatement);
+          var second = parseArgExpression(block, 2, parseStatement);
+          return r("DateTime").newInstance([
+            literalNum(0),
+            literalNum(1),
+            literalNum(1),
+            hour,
+            minute,
+            second
+          ]);
+        }
+      default:
+        return literalString(
+            "component expression not found $instanceName:$methodName!");
+    }
   }
 
   /// Parse an expression from the text category of builtin blocks
@@ -252,10 +439,40 @@ class ExpressionParser {
           int items = getXMLItemCount(block);
           Expression result = literalString("");
           for (int i = 0; i < items; i++) {
-            result = result.operatorAdd(parseExpression(
+            result = result.operatorEuclideanModulo(parseExpression(
                 findBlockOfXMLChildByName(block, "ADD$i"), parseStatement));
           }
+          state.usesSafeStringAddition = true;
           return result;
+        }
+      case "text_compare":
+        {
+          Expression A =
+              parseExpressionXMLChild(block, "TEXT1", parseStatement);
+          Expression B =
+              parseExpressionXMLChild(block, "TEXT2", parseStatement);
+          switch (findXMLChildOp(block)) {
+            case "EQUAL":
+              {
+                return A.property("compareTo")([B]).equalTo(literalNum(0));
+              }
+            case "NEQ":
+              {
+                return A.property("compareTo")([B]).notEqualTo(literalNum(0));
+              }
+            case "LT":
+              {
+                return A.property("compareTo")([B]).lessThan(literalNum(0));
+              }
+            case "GT":
+              {
+                return A.property("compareTo")([B]).greaterThan(literalNum(0));
+              }
+            default:
+              {
+                return A.property("compareTo")([B]).equalTo(literalNum(0));
+              }
+          }
         }
       case "text_contains":
         {
@@ -365,9 +582,12 @@ class ExpressionParser {
     switch (type) {
       case "math_number":
         {
-          return literalNum(double.tryParse(
+          var parsed = int.tryParse(
                   findXMLChildByName(block, "NUM", "field").innerText) ??
-              0);
+              (double.tryParse(
+                      findXMLChildByName(block, "NUM", "field").innerText) ??
+                  0);
+          return literalNum(parsed);
         }
       case "math_number_radix":
         {
@@ -553,7 +773,7 @@ class ExpressionParser {
       case "lists_create_with":
         {
           int count =
-              int.parse(block.getElement("mutation")!.getAttribute("count")!);
+              int.parse(block.getElement("mutation")!.getAttribute("items")!);
           var items = <Expression>[];
           for (int i = 0; i < count; i++) {
             items.add(
@@ -566,13 +786,13 @@ class ExpressionParser {
       case "lists_length":
         {
           return parseExpression(
-                  findBlockOfXMLChildByName(block, "VALUE"), parseStatement)
+                  findBlockOfXMLChildByName(block, "LIST"), parseStatement)
               .property("length");
         }
       case "lists_is_empty":
         {
           return parseExpression(
-                  findBlockOfXMLChildByName(block, "VALUE"), parseStatement)
+                  findBlockOfXMLChildByName(block, "LIST"), parseStatement)
               .property("isEmpty");
         }
       case "lists_is_in":

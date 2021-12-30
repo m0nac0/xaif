@@ -14,7 +14,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import 'package:flutter/material.dart';
 
-import 'gui/aia_compiler_widget_desktop.dart';
+import 'gui/gui_stub.dart'
+    if (dart.library.html) 'package:xaif/gui/aia_compiler_widget_web.dart'
+    if (dart.library.io) 'gui/aia_compiler_widget_desktop.dart';
 
 const toolName = "xaif";
 
@@ -46,6 +48,8 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: toolName,
       theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
       home: const MyHomePage(
         toolName,
       ),
@@ -85,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: const Center(
-        child: AIAAccepterDesktop(),
+        child: AIAAccepter(),
       ),
     );
   }

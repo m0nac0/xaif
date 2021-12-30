@@ -28,7 +28,8 @@ class ComponentParser {
 
   /// Parse a component (from the SCM/JSON definition)
   /// Returns null for invisible components
-  Expression? parseComponent(var component) {
+  Expression? parseComponent(
+      var component, bool unconstrainedWidth, bool unconstrainedHeight) {
     final String type = component["\$Type"];
     final String componentName = component["\$Name"];
 
@@ -58,7 +59,12 @@ class ComponentParser {
       case "Button":
         {
           return getDartExpressionForButton(
-              propsDartNames, component, defaultValues, eventHandlers);
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight);
         }
       case "DatePicker":
         {
@@ -82,7 +88,12 @@ class ComponentParser {
                   .call([r("context")]));
 
           return getDartExpressionForButton(
-              propsDartNames, component, defaultValues, eventHandlers,
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight,
               disableLongPress: true);
         }
       case "TimePicker":
@@ -97,7 +108,12 @@ class ComponentParser {
               r(state.methods[componentName]!["launchPicker"]!.name!)
                   .call([r("context")]));
           return getDartExpressionForButton(
-              propsDartNames, component, defaultValues, eventHandlers,
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight,
               disableLongPress: true);
         }
       case "ImagePicker":
@@ -111,7 +127,12 @@ class ComponentParser {
                   .call([r("context")]));
 
           return getDartExpressionForButton(
-              propsDartNames, component, defaultValues, eventHandlers,
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight,
               disableLongPress: true);
         }
       case "Label":
@@ -121,76 +142,351 @@ class ComponentParser {
               component,
               defaultValues,
               getSizedComponentDartExpression(
-                propsDartNames,
-                component,
-                defaultValues,
-                getDartExpressionForTextComponent(
-                    materialPackage, propsDartNames, component, defaultValues),
-              ));
+                  propsDartNames,
+                  component,
+                  defaultValues,
+                  getDartExpressionForTextComponent(materialPackage,
+                      propsDartNames, component, defaultValues),
+                  unconstrainedWidth,
+                  unconstrainedHeight));
         }
       case "Switch":
       case "CheckBox":
         {
           return getSwitchOrCheckboxDartExpression(
-              propsDartNames, type, defaultValues, component, eventHandlers);
+              propsDartNames,
+              type,
+              defaultValues,
+              component,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight);
         }
       case "TextBox":
         {
           return getTextfieldDartExpression(
-              componentName, propsDartNames, component, defaultValues);
+              componentName,
+              propsDartNames,
+              component,
+              defaultValues,
+              unconstrainedWidth,
+              unconstrainedHeight);
         }
 
       case "PasswordTextBox":
         {
-          return getTextfieldDartExpression(
-              componentName, propsDartNames, component, defaultValues,
+          return getTextfieldDartExpression(componentName, propsDartNames,
+              component, defaultValues, unconstrainedWidth, unconstrainedHeight,
               obscureText: true);
         }
       case "Slider":
         {
           return getSliderDartExpression(
-              propsDartNames, component, defaultValues, eventHandlers);
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight);
         }
       case "Spinner":
         {
           return getSpinnerDartExpression(
-              propsDartNames, component, defaultValues, eventHandlers);
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight);
+        }
+      case "ListPicker":
+        {
+          state.fields[propsDartNames["Selection"]!] = literalString("");
+          state.ensureFieldExists(
+              getPropertyDartName(componentName, "Elements"));
+          getDartExpressionForProperty(
+              propsDartNames,
+              "Elements",
+              getComponentStringProperty(component, "ElementsFromString")
+                  ?.property("split")([literalString(",")]),
+              defaultValues);
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "ElementsFromString")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = r(getPropertyDartName(componentName, "Elements"))
+                .assign(r("value").property("split")([literalString(",")]))
+                .statement));
+
+          state.addMethod(
+              componentName,
+              "Open",
+              getListPickerLaunchMethod(
+                componentName,
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "Title",
+                    getComponentStringProperty(component, "Title"),
+                    defaultValues),
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "ItemBackgroundColor",
+                    getComponentColorProperty(component, "ItemBackgroundColor"),
+                    defaultValues),
+                getDartExpressionForProperty(
+                    propsDartNames,
+                    "ItemTextColor",
+                    getComponentColorProperty(component, "ItemTextColor"),
+                    defaultValues),
+              ));
+          eventHandlers["Click"] = wrapCodeWithEmptyLambda(
+              r(state.methods[componentName]!["Open"]!.name!)
+                  .call([r("context")]));
+
+          return getDartExpressionForButton(
+              propsDartNames,
+              component,
+              defaultValues,
+              eventHandlers,
+              unconstrainedWidth,
+              unconstrainedHeight,
+              disableLongPress: true);
         }
       case "ListView":
         {
-          return getListViewDartExpression(
-              propsDartNames, component, defaultValues);
+          return getListViewDartExpression(propsDartNames, component,
+              defaultValues, unconstrainedWidth, unconstrainedHeight);
         }
       case "Image":
         {
-          return getImageDartExpression(
-              propsDartNames, component, defaultValues);
+          return getImageDartExpression(propsDartNames, component,
+              defaultValues, unconstrainedWidth, unconstrainedHeight);
         }
       case "HorizontalArrangement":
         {
           return getDartExpressionForHorizontalArrangementComponent(
-              component, propsDartNames, defaultValues);
+              component,
+              propsDartNames,
+              defaultValues,
+              unconstrainedWidth,
+              unconstrainedHeight);
         }
       case "VerticalArrangement":
         {
           return getDartExpressionForVerticalArrangementComponent(
-              component, propsDartNames, defaultValues);
+              component,
+              propsDartNames,
+              defaultValues,
+              unconstrainedWidth,
+              unconstrainedHeight);
         }
 
       case "HorizontalScrollArrangement":
       case "VerticalScrollArrangement":
         {
           return getDartExpressionForScrollArrangementComponent(
-              component, propsDartNames, defaultValues, type);
+              component,
+              propsDartNames,
+              defaultValues,
+              type,
+              unconstrainedWidth,
+              unconstrainedHeight);
         }
       case "TableArrangement":
         {
           return getDartExpressionForTableArrangementComponent(
-              component, propsDartNames, defaultValues);
+              component,
+              propsDartNames,
+              defaultValues,
+              unconstrainedWidth,
+              unconstrainedHeight);
+        }
+      case "VideoPlayer":
+        {
+          //TODO: support asset files
+          var controllerName = getPropertyDartName(componentName, "Controller");
+          state.fields[controllerName] =
+              r("VideoPlayerController").newInstanceNamed("network", [
+            getComponentStringProperty(component, "Source") ??
+                defaultValues[getPropertyDartName(componentName, "Source")]!
+          ]).cascade("initialize")([]); // the official example calls setState
+          // (to ensure the preview is loaded?). This could only be done in
+          // initState.
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = getPropertyDartName(componentName, "Source")
+            ..returns = r("String")
+            ..body = r(controllerName).property("dataSource").code
+            ..lambda = true));
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Source")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = wrapWithSetState(r(controllerName)
+                .assign(r("VideoPlayerController").newInstanceNamed(
+                    "network", [r("value")]).cascade("initialize")([]))
+                .statement)));
+          state.usesEnsureNum = true;
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Volume")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = r(controllerName)
+                .property("setVolume")([
+                  r("ensureNum")([r("value")]).operatorDivide(literalNum(100.0))
+                ])
+                .code
+            ..lambda = true));
+          return maybeVisible(
+              propsDartNames,
+              component,
+              defaultValues,
+              getSizedComponentDartExpression(
+                  propsDartNames,
+                  component,
+                  defaultValues,
+                  r("VideoPlayer", videoPlayerPackage)
+                      .newInstance([r(controllerName)]),
+                  unconstrainedWidth,
+                  unconstrainedHeight,
+                  expandForAutomatic: true));
         }
       case "Clock":
+        {
+          var timer = getPropertyDartName(componentName, "Timer");
+          var timerEnabled = getPropertyDartName(componentName, "TimerEnabled");
+          state.ensureFieldExists(timer);
+
+          state.addInitStateStatement(wrapWithSetState(r(timerEnabled)
+              .assign(getComponentBoolProperty(component, "TimerEnabled") ??
+                  defaultValues[
+                      getPropertyDartName(componentName, "TimerEnabled")]!)
+              .statement));
+
+          // get TimerEnabled => Timer != null;
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = timerEnabled
+            ..returns = r("bool")
+            ..body = r(timer).notEqualTo(literalNull).code
+            ..lambda = true));
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = timerEnabled
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = Block.of([
+              r(timer).nullSafeProperty("cancel")([]).statement,
+              r(timer)
+                  .assign(r("value").conditional(
+                      r("Timer.periodic", asyncPackage)([
+                        r("Duration")([], {
+                          "milliseconds": getDartExpressionForProperty(
+                              propsDartNames,
+                              "TimerInterval",
+                              getComponentNumProperty(
+                                  component, "TimerInterval"),
+                              defaultValues)
+                        }),
+                        Method((m) => m
+                          ..requiredParameters
+                              .add(Parameter((p) => p..name = "_"))
+                          ..body = safeCallEventHandler(getDartEventHandler(
+                              state, componentName, "Timer"))).closure
+                      ]),
+                      literalNull))
+                  .statement
+            ])));
+          return null;
+        }
+      case "Player":
+        {
+          // Source: no effect when changed while playing (same in AI???)
+          getDartExpressionForProperty(propsDartNames, "Source",
+              getComponentStringProperty(component, "Source"), defaultValues);
+
+          // Always create an AudioPlayer object
+          var initialSource = literalString("assets/").operatorAdd(
+              getComponentStringProperty(component, "Source") ??
+                  literalString(""));
+          // We have an internal source variable, that can only be accessed through
+          // getters and setters (setter updates the player's source)
+          state.fields[getPropertyDartName(componentName, "SourceInternal")] =
+              initialSource;
+
+          state.fields[componentName + "_Player"] =
+              r("AudioPlayer", justAudioPackage)
+                  .newInstance([]).property(".setAsset")([initialSource]);
+          // We remap these properties to the AudioPlayer's properties
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = getPropertyDartName(componentName, "IsPlaying")
+            ..returns = r("bool")
+            ..body = r(getPropertyDartName(componentName, "Player"))
+                .property("playing")
+                .code
+            ..lambda = true));
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = getPropertyDartName(componentName, "Loop")
+            ..returns = r("bool")
+            ..body = r(getPropertyDartName(componentName, "Player"))
+                .property("loopMode")
+                .equalTo(r("LoopMode.one"))
+                .code
+            ..lambda = true));
+          // Intercept the property setter and redirect to AudioPlayer
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Loop")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = r(getPropertyDartName(componentName, "Player"))
+                .property("setLoopMode")
+                ([r("value").conditional(r("LoopMode.one"), r("LoopMode.off"))])
+                .code
+            ..lambda = true));
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = getPropertyDartName(componentName, "Source")
+            ..returns = r("String")
+            ..body =
+                r(getPropertyDartName(componentName, "SourceInternal")).code
+            ..lambda = true));
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Source")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = Block.of([
+              r(getPropertyDartName(componentName, "SourceInternal"))
+                  .assign(literalString("assets/").operatorAdd(r("value")))
+                  .statement,
+              r(getPropertyDartName(componentName, "Player"))
+                  .property("setAsset")
+                  ([r(getPropertyDartName(componentName, "SourceInternal"))])
+                  .statement
+            ])));
+          //AI volume is 0-100; just_audio volume is: 1.0 normal
+          state.usesEnsureNum = true;
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = getPropertyDartName(componentName, "Volume")
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = r(getPropertyDartName(componentName, "Player"))
+                .property("setVolume")([
+                  r("ensureNum")([r("value")]).operatorDivide(literalNum(100.0))
+                ])
+                .code
+            ..lambda = true));
+        }
+        break;
       case "Web":
         {
+          getDartExpressionForProperty(propsDartNames, "Url",
+              getComponentStringProperty(component, "Url"), defaultValues);
           //invisible components
           return null;
         }
@@ -233,14 +529,19 @@ class ComponentParser {
   Expression getDartExpressionForTableArrangementComponent(
       component,
       Map<String, String> dartProperties,
-      Map<String, Expression?> defaultValues) {
+      Map<String, Expression?> defaultValues,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight) {
     // TODO: GridView isn't right (because scrollable), we need to use for-loops and create nested rows / columns
     Iterable children = component["\$Components"];
     int rows = children.isEmpty
         ? 0
         : children.map((e) => int.parse(e["Row"])).reduce(max) + 1;
-    var childrenComponents =
-        children.map((c) => parseComponent(c)).whereNotNull();
+    var childrenComponents = //TODO check constraints
+        children
+            .map((c) =>
+                parseComponent(c, unconstrainedWidth, unconstrainedHeight))
+            .whereNotNull();
     return maybeVisible(
         dartProperties,
         component,
@@ -253,17 +554,24 @@ class ComponentParser {
               "crossAxisCount": literalNum(rows),
               "children": literalList(childrenComponents),
               "shrinkWrap": ltrue,
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight));
   }
 
   Expression getDartExpressionForScrollArrangementComponent(
       component,
       Map<String, String> dartProperties,
       Map<String, Expression?> defaultValues,
-      String type) {
+      String type,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight) {
     Iterable children = component["\$Components"];
-    var childrenComponents =
-        children.map((c) => parseComponent(c)).whereNotNull();
+    var childrenComponents = //TODO check constraints
+        children
+            .map((c) =>
+                parseComponent(c, unconstrainedWidth, unconstrainedHeight))
+            .whereNotNull();
     return maybeVisible(
         dartProperties,
         component,
@@ -277,67 +585,101 @@ class ComponentParser {
                   (type.contains("Horizontal") ? "horizontal" : "vertical")),
               "shrinkWrap": ltrue,
               "children": literalList(childrenComponents)
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight));
   }
 
   Expression getDartExpressionForVerticalArrangementComponent(
       component,
       Map<String, String> dartProperties,
-      Map<String, Expression?> defaultValues) {
-    Iterable children = component["\$Components"];
-    var childrenComponents =
-        children.map((c) => parseComponent(c)).whereNotNull();
+      Map<String, Expression?> defaultValues,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight) {
+    Iterable children = component["\$Components"] ?? [];
+    var childrenComponents = children
+        .map((c) => parseComponent(c, unconstrainedWidth, true))
+        .whereNotNull();
     return maybeVisible(
         dartProperties,
         component,
         defaultValues,
-        r("Column").newInstance([], {
-          "mainAxisAlignment": r("numToMainAxisAlignment")([
-            getDartExpressionForProperty(
-                dartProperties,
-                "AlignVertical",
-                getComponentNumProperty(component, "AlignVertical"),
-                defaultValues)
-          ]),
-          "crossAxisAlignment": r("numToCrossAxisAlignment")([
-            getDartExpressionForProperty(
-                dartProperties,
-                "AlignHorizontal",
-                getComponentNumProperty(component, "AlignHorizontal"),
-                defaultValues)
-          ]),
-          "children": literalList(childrenComponents)
-        }));
+        // r("Flexible")([], {
+        //"child":
+        getSizedComponentDartExpression(
+            dartProperties,
+            component,
+            defaultValues,
+            //TODO IntrinsicWidth/-Height are relatively expensive;
+            // possible optimization: only use them if we have any child that may
+            // have a width(/height) of fill_parent when we have don't have a fixed size
+            r("IntrinsicWidth")([], {
+              "child": r("Column").newInstance([], {
+                "mainAxisAlignment": r("numToMainAxisAlignment")([
+                  getDartExpressionForProperty(
+                      dartProperties,
+                      "AlignVertical",
+                      getComponentNumProperty(component, "AlignVertical"),
+                      defaultValues)
+                ]),
+                "crossAxisAlignment": r("numToCrossAxisAlignment")([
+                  getDartExpressionForProperty(
+                      dartProperties,
+                      "AlignHorizontal",
+                      getComponentNumProperty(component, "AlignHorizontal"),
+                      defaultValues)
+                ]),
+                "children": literalList(childrenComponents)
+              }),
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight)
+
+        //})
+        );
   }
 
   Expression getDartExpressionForHorizontalArrangementComponent(
       component,
       Map<String, String> dartProperties,
-      Map<String, Expression?> defaultValues) {
-    Iterable children = component["\$Components"];
-    var childrenComponents =
-        children.map((c) => parseComponent(c)).whereNotNull();
+      Map<String, Expression?> defaultValues,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight) {
+    Iterable children = component["\$Components"] ?? [];
+    var childrenComponents = children
+        .map((c) => parseComponent(c, true, unconstrainedHeight))
+        .whereNotNull();
     return maybeVisible(
         dartProperties,
         component,
         defaultValues,
-        r("Row").newInstance([], {
-          "mainAxisAlignment": r("numToMainAxisAlignment")([
-            getDartExpressionForProperty(
-                dartProperties,
-                "AlignHorizontal",
-                getComponentNumProperty(component, "AlignHorizontal"),
-                defaultValues)
-          ]),
-          "crossAxisAlignment": r("numToCrossAxisAlignment")([
-            getDartExpressionForProperty(
-                dartProperties,
-                "AlignVertical",
-                getComponentNumProperty(component, "AlignVertical"),
-                defaultValues)
-          ]),
-          "children": literalList(childrenComponents)
-        }));
+        //r("Flexible")([], {
+        //  "child":
+        getSizedComponentDartExpression(
+            dartProperties,
+            component,
+            defaultValues,
+            r("IntrinsicHeight")([], {
+              "child": r("Row").newInstance([], {
+                "mainAxisAlignment": r("numToMainAxisAlignment")([
+                  getDartExpressionForProperty(
+                      dartProperties,
+                      "AlignHorizontal",
+                      getComponentNumProperty(component, "AlignHorizontal"),
+                      defaultValues)
+                ]),
+                "crossAxisAlignment": r("numToCrossAxisAlignment")([
+                  getDartExpressionForProperty(
+                      dartProperties,
+                      "AlignVertical",
+                      getComponentNumProperty(component, "AlignVertical"),
+                      defaultValues)
+                ]),
+                "children": literalList(childrenComponents)
+              }),
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight));
   }
 
 // Helpers for parseComponent
@@ -348,7 +690,7 @@ class ComponentParser {
     } else {
       return {
         for (var prop in properties[type]!.keys)
-          prop: componentName + "_" + prop
+          prop: getPropertyDartName(componentName, prop)
       };
     }
   }
@@ -429,7 +771,10 @@ class ComponentParser {
       component,
       Map<String, Expression?> defaultValues,
       Map<String, Expression?> eventHandlers,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight,
       {bool disableLongPress = false}) {
+    var hasImage = getComponentStringProperty(component, "Image") != null;
     return maybeVisible(
         dartProperties,
         component,
@@ -449,12 +794,18 @@ class ComponentParser {
               "onLongPress": disableLongPress
                   ? literalNull
                   : (eventHandlers["LongClick"] ?? getNoOpMethodExpression()),
-              "child": getComponentStringProperty(component, "Text") == null
+              "child": hasImage
                   ? getImageDartExpression(
-                      dartProperties, component, defaultValues, true)
+                      dartProperties,
+                      component,
+                      defaultValues,
+                      unconstrainedWidth,
+                      unconstrainedHeight,
+                      true)
                   : getDartExpressionForTextComponent(materialPackage,
                       dartProperties, component, defaultValues),
               "style": r("ElevatedButton.styleFrom", materialPackage)([], {
+                if (hasImage) "padding": r("EdgeInsets.all")([literalNum(0)]),
                 "shape": component["Shape"] ==
                         "1" // Designer only property, can't change at runtime
                     ? //1 is Rounded
@@ -469,7 +820,9 @@ class ComponentParser {
                     getComponentColorProperty(component, "BackgroundColor"),
                     {dartProperties["BackgroundColor"]!: r("Colors.grey")}),
               }),
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight));
   }
 
   Expression getTextfieldDartExpression(
@@ -477,6 +830,8 @@ class ComponentParser {
       Map<String, String> dartProperties,
       component,
       Map<String, Expression?> defaultValues,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight,
       {bool obscureText = false}) {
     state.fields[componentName + "_Controller"] =
         r("TextEditingController").newInstance([]);
@@ -551,14 +906,19 @@ class ComponentParser {
                   getComponentBoolProperty(component, "ReadOnly"),
                   defaultValues),
               if (obscureText) "obscureText": ltrue,
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight,
+            expandForAutomatic: true));
   }
 
   Expression getSpinnerDartExpression(
       Map<String, String> dartProperties,
       component,
       Map<String, Expression?> defaultValues,
-      Map<String, Expression?> eventHandlers) {
+      Map<String, Expression?> eventHandlers,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight) {
     state.fields[dartProperties["Elements"]!] = getDartExpressionForProperty(
         dartProperties,
         "Elements",
@@ -613,14 +973,18 @@ class ComponentParser {
                           .statement).closure
                   ])
                   .property("toList")([])
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight));
   }
 
   Expression getSliderDartExpression(
       Map<String, String> dartProperties,
       component,
       Map<String, Expression?> defaultValues,
-      Map<String, Expression?> eventHandlers) {
+      Map<String, Expression?> eventHandlers,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight) {
     state.fields[dartProperties["ThumbPosition"]!] =
         getDartExpressionForProperty(dartProperties, "ThumbPosition",
             getComponentNumProperty(component, "ThumbPosition"), defaultValues);
@@ -663,7 +1027,9 @@ class ComponentParser {
                   safeCallEventHandler(
                       eventHandlers["PositionChanged"], [r("newValue")])
                 ])).closure
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight));
   }
 
   Expression getSwitchOrCheckboxDartExpression(
@@ -671,7 +1037,9 @@ class ComponentParser {
       String type,
       Map<String, Expression?> defaultValues,
       component,
-      Map<String, Expression?> eventHandlers) {
+      Map<String, Expression?> eventHandlers,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight) {
     //Force the property to be a variable (otherwise it would be a hardcoded literal value if not referenced in blocks),
     //but this is a special case, because we need it to be a variable to control UI output
     // (Also see similar comment above or at ParsingState.fields)
@@ -717,11 +1085,17 @@ class ComponentParser {
               "children":
                   //Switch and Checkbox have the text on different sides
                   literalList(type == "Switch" ? children.reversed : children),
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight));
   }
 
-  Expression getImageDartExpression(Map<String, String> dartProperties,
-      component, Map<String, Expression?> defaultValues,
+  Expression getImageDartExpression(
+      Map<String, String> dartProperties,
+      component,
+      Map<String, Expression?> defaultValues,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight,
       [useImage = false]) {
     return maybeVisible(
         dartProperties,
@@ -732,6 +1106,7 @@ class ComponentParser {
             component,
             defaultValues,
             r("Image").newInstance([], {
+              "fit": r("BoxFit.contain"),
               "image": optimizedConditional(
                   getDartExpressionForProperty(
                           dartProperties,
@@ -765,11 +1140,18 @@ class ComponentParser {
                             //         component, "Picture"))),
                             defaultValues))
                   ]))
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight,
+            expandForAutomatic: true));
   }
 
-  Expression getListViewDartExpression(Map<String, String> dartProperties,
-      component, Map<String, Expression?> defaultValues) {
+  Expression getListViewDartExpression(
+      Map<String, String> dartProperties,
+      component,
+      Map<String, Expression?> defaultValues,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight) {
     state.fields[dartProperties["Elements"]!] = getDartExpressionForProperty(
         dartProperties,
         "Elements",
@@ -811,7 +1193,9 @@ class ComponentParser {
                 ..requiredParameters.add(Parameter((p) => p..name = "_1"))
                 ..requiredParameters.add(Parameter((p) => p..name = "_2"))
                 ..body = r("Divider").newInstance([]).code).closure,
-            })));
+            }),
+            unconstrainedWidth,
+            unconstrainedHeight));
   }
 
   Method getDatePickerLaunchMethod(String componentName) {
@@ -894,10 +1278,78 @@ class ComponentParser {
           .statement);
   }
 
+  Method getListPickerLaunchMethod(
+    String componentName,
+    Expression title,
+    Expression backgroundColor,
+    Expression textColor,
+  ) {
+    //TODO Filtering, SelectionIndex, title design
+    return Method((b) => b
+      ..name = componentName + "_Open"
+      ..requiredParameters.add(Parameter((p) => p
+        ..name = "context"
+        ..type = r("BuildContext")))
+      ..body = r("showDialog")([], {
+        "context": r("context"),
+        "builder": Method((m) => m
+          ..requiredParameters.add(Parameter((p) => p..name = "_"))
+          ..body = r("Dialog").newInstance([], {
+            "child": r("ListView").newInstance([], {
+              "shrinkWrap": ltrue,
+              "children": literalList([
+                r("Center").newInstance([], {
+                  "child": r("Text").newInstance([title])
+                }),
+                r(getPropertyDartName(componentName, "Elements"))
+                    .property("map")([
+                      Method((m) => m
+                        ..requiredParameters
+                            .add(Parameter((p) => p..name = "item"))
+                        ..body = r("ListTile").newInstance([], {
+                          "title": r("Text").newInstance([r("item")]),
+                          "textColor": textColor,
+                          "tileColor": backgroundColor,
+                          "onTap": Method((n) => n
+                            ..body =
+                                r("Navigator.pop")([r("context"), r("item")])
+                                    .statement).closure
+                        }).code
+                        ..lambda = true).closure
+                    ])
+                    .property("toList")([])
+                    .spread
+              ])
+            })
+          }).code
+          ..lambda = true).closure
+      })
+          .property("then")([
+            Method((b) => b
+              ..requiredParameters.add(Parameter((p) => p..name = "value"))
+              ..body = Block.of([
+                // Prevent exception if picking was canceled
+                const Code("if(value==null){return;}"),
+                r(getPropertyDartName(componentName, "Selection"))
+                    .assign(r("value"))
+                    .statement,
+                safeCallEventHandler(
+                    getDartEventHandler(state, componentName, "AfterPicking"))
+              ])).closure
+          ])
+          .statement);
+  }
+
   /// Creates a dart expression that wraps a component in a SizedBox, with
   /// width and height set accordingly.
-  Expression getSizedComponentDartExpression(Map<String, String> dartProperties,
-      dynamic component, Map<String, dynamic> defaultValues, Expression child) {
+  Expression getSizedComponentDartExpression(
+      Map<String, String> dartProperties,
+      dynamic component,
+      Map<String, dynamic> defaultValues,
+      Expression child,
+      bool unconstrainedWidth,
+      bool unconstrainedHeight,
+      {expandForAutomatic = false}) {
     Expression width = getDartExpressionForProperty(dartProperties, "Width",
         getComponentNumProperty(component, "Width"), defaultValues);
     Expression height = getDartExpressionForProperty(dartProperties, "Height",
@@ -906,7 +1358,8 @@ class ComponentParser {
 
     // Logic: width == -2 ? double.infinity : (width == -1) ? null : width)
     // for fill parent: infinite size; for automatic: null size; else: user-specified size
-    return r("SizedBox").newInstance([], {
+
+    var sizedBox = r("SizedBox")([], {
       "child": child,
       //Possible optimization: leave out the property if it would be null
       "width": optimizedConditional(
@@ -920,6 +1373,50 @@ class ComponentParser {
           optimizedConditional(optimizedLiteralEqual(height, literalNum(-1)),
               literalNull, height))
     });
+
+    if (unconstrainedWidth) {
+      if (expandForAutomatic &&
+          width is LiteralExpression &&
+          (width.literal == "-2" || width.literal == "-1")) {
+        return r("Expanded")([], {
+          "child": sizedBox,
+        });
+      }
+    }
+
+    if (unconstrainedHeight) {
+      if (expandForAutomatic &&
+          height is LiteralExpression &&
+          (height.literal == "-2" || height.literal == "-1")) {
+        return r("Expanded")([], {
+          "child": sizedBox,
+        });
+      }
+    }
+
+    return
+        // optimizedConditional(
+        //   optimizedLiteralEqual(width, literalNum(-2)),
+        //.or(optimizedLiteralEqual(height, literalNum(-2))),
+        r("SizedBox")([], {
+      "child": child,
+      //Possible optimization: leave out the property if it would be null
+      "width": optimizedConditional(
+          optimizedLiteralEqual(width, literalNum(-2)),
+          unconstrainedWidth ? literalNull : r("double.infinity"),
+          optimizedConditional(optimizedLiteralEqual(width, literalNum(-1)),
+              literalNull, width)),
+      "height": optimizedConditional(
+          optimizedLiteralEqual(height, literalNum(-2)),
+          unconstrainedHeight ? literalNull : r("double.infinity"),
+          optimizedConditional(optimizedLiteralEqual(height, literalNum(-1)),
+              literalNull, height))
+    })
+        //,sizedBox)
+        ;
+    // } else {
+    //   return sizedBox;
+    // }
   }
 
   // Helpers for getting properties
@@ -971,7 +1468,7 @@ class ComponentParser {
     } else {
       return {
         for (var prop in properties[type]!.keys)
-          componentName + "_" + prop: properties[type]![prop]
+          getPropertyDartName(componentName, prop): properties[type]![prop]
       };
     }
   }
