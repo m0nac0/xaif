@@ -80,6 +80,8 @@ class _AIAAccepterState extends State<AIAAccepter> {
     BuildTarget.web,
     if (Platform.isWindows) BuildTarget.windows,
     if (Platform.isLinux) BuildTarget.linux,
+    if(Platform.isMacOS) BuildTarget.macos,
+    if(Platform.isMacOS) BuildTarget.ios_simulator,
   ];
 
   // The directory selected by the user to create the project directory in
@@ -678,5 +680,15 @@ class BuildTarget {
     "linux",
     "linux",
     "build/linux/x64/release/bundle",
+  );
+  static const macos = BuildTarget._(
+    "macos",
+    "macos",
+    "build/macos/Build/Products/Release",
+  );
+  static const ios_simulator = BuildTarget._(
+    "ios --simulator",
+    "ios --simulator",
+    "build/ios/iphonesimulator",
   );
 }
