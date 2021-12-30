@@ -30,7 +30,6 @@ class PubspecBuilder {
     "share_plus",
     "just_audio",
     "just_audio_libwinmedia",
-
   ];
 
   /// Generates the content of a valid pubspec.yaml file with the passed

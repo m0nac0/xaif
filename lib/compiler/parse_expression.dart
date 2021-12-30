@@ -252,14 +252,16 @@ class ExpressionParser {
             .property("duration")
             .property("inMilliseconds");
       } else if (componentType == "Clock") {
-        return parseClockMethodExpression(methodName, block, parseStatement, instanceName);
+        return parseClockMethodExpression(
+            methodName, block, parseStatement, instanceName);
       }
     }
     return literalString(
         "component expression not found $instanceName:$methodName!");
   }
 
-  Expression parseClockMethodExpression(String? methodName, XmlElement block, Code parseStatement(XmlElement block), String instanceName) {
+  Expression parseClockMethodExpression(String? methodName, XmlElement block,
+      Code Function(XmlElement block) parseStatement, String instanceName) {
     switch (methodName) {
       case "AddDays":
       case "AddHours":
@@ -286,15 +288,15 @@ class ExpressionParser {
           var dateTime = parseArgExpression(block, 0, parseStatement);
           var weeks = parseArgExpression(block, 1, parseStatement);
           return dateTime.property("add")([
-            r("Duration")(
-                [], {"days": literalNum(7).operatorMultiply(weeks)})
+            r("Duration")([], {"days": literalNum(7).operatorMultiply(weeks)})
           ]);
         }
       case "AddYears":
         {
           var dateTime = parseArgExpression(block, 0, parseStatement);
           var years = parseArgExpression(block, 1, parseStatement);
-          return r("DateTime").newInstance([dateTime.property("year").operatorAdd(years),
+          return r("DateTime").newInstance([
+            dateTime.property("year").operatorAdd(years),
             dateTime.property("month"),
             dateTime.property("day"),
             dateTime.property("hour"),
@@ -383,8 +385,7 @@ class ExpressionParser {
         }
       case "MakeInstantFromMillis":
         {
-          return r("DateTime").newInstanceNamed(
-              "fromMillisecondsSinceEpoch",
+          return r("DateTime").newInstanceNamed("fromMillisecondsSinceEpoch",
               [parseArgExpression(block, 0, parseStatement)]);
         }
       case "MakeInstantFromParts":
