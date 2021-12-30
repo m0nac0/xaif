@@ -92,6 +92,18 @@ jobs:
       - name: flutter build web
         run: flutter build web
       - run: cp LICENSE build/web
+      - run: |
+          cd build/web
+          python -m http.server &
+          npm install -g inliner
+          inliner localhost:8000 > index.html
+          git config user.email "CI@localhost.com"
+          git config user.name "GH Actions"
+          git add index.html
+          git commit -m "Update inlined index.html"
+          git push
+          cd ..
+          cd ..
       - name: Upload web Build Artifact
         uses: actions/upload-artifact@v2.3.1
         with:
