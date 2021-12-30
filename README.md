@@ -41,22 +41,24 @@ on macOS, but this hasn't been tested, yet.
 1. **Run the source code directly:**
     1. Either clone this repository with git or download it as a zip-file from GitHub (green button titled "Code")
        and unzip it to any location.<br>
-    2. Then open a shell in the location where you cloned/unzipped the repository and run `flutter run -d windows` (if
-       your computer is running Windows) or `flutter run -d linux` (if your computer is running Linux).<br>
+    2. Then open a shell in the location where you cloned/unzipped the repository and run <br>`flutter run -d windows` (if
+       your computer is running Windows) <br>or `flutter run -d linux` (if your computer is running Linux)<br> or 
+       `flutter run -d macos` (if your computer is running macOS).<br>
        (This first approach will require you to have followed the *additional* setup steps for your computer's operating
-       system in the Flutter installation guide. So if you want to run xaif on Windows with this approach, you need to
-       *also* follow the ["Windows setup" step](https://docs.flutter.dev/get-started/install/windows#windows-setup) in
-       the Flutter Windows installation guide, or
+       system in the Flutter installation guide. So if you want to run xaif with this approach, you need to
+       *also* follow the <br>["Windows setup" step](https://docs.flutter.dev/get-started/install/windows#windows-setup) in
+       the Flutter Windows installation guide if your computer is running Windows,<br> or
        the ["Linux setup" step](https://docs.flutter.dev/get-started/install/linux#linux-setup) in the Flutter Linux
-       installation guide if you want to run xaif on Linux with this approach.)
-           <br><br>
+       installation guide if your computer is running Linux <br>
+       or the ["macOS setup" step](https://docs.flutter.dev/get-started/install/macos#macos-setup) in the Flutter Linux
+       installation guide if your computer is running macOS.)
+       <br><br>
 2. **Run prebuilt executables:** <br>
    Alternatively, you can download and run prebuilt binaries of xaif from the CI. They are available from
    the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or
    from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain)
    (as artifacts). <br>
-   You can use these prebuilt executables to run xaif without completing the "Windows setup" or "Linux setup" step in
-   the Flutter setup, but you still have to complete the basic Flutter setup!
+   For this approach you only need to complete the basic Flutter installation!
     <br><br>
 3. **Very limited: run xaif as web app from source:** <br>
    *This approach has serious limitations, and it is recommended that you use one of first other two approaches, if
