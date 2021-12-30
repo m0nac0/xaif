@@ -251,10 +251,171 @@ class ExpressionParser {
             .property("value")
             .property("duration")
             .property("inMilliseconds");
+      } else if (componentType == "Clock") {
+        return parseClockMethodExpression(methodName, block, parseStatement, instanceName);
       }
     }
     return literalString(
         "component expression not found $instanceName:$methodName!");
+  }
+
+  Expression parseClockMethodExpression(String? methodName, XmlElement block, Code parseStatement(XmlElement block), String instanceName) {
+    switch (methodName) {
+      case "AddDays":
+      case "AddHours":
+      case "AddMinutes":
+      case "AddSeconds":
+        {
+          var dateTime = parseArgExpression(block, 0, parseStatement);
+          var quantity = parseArgExpression(block, 1, parseStatement);
+          return dateTime.property("add")([
+            r("Duration")(
+                [], {methodName!.substring(3).toLowerCase(): quantity})
+          ]);
+        }
+      case "AddDuration":
+        {
+          var dateTime = parseArgExpression(block, 0, parseStatement);
+          var quantity = parseArgExpression(block, 1, parseStatement);
+          return dateTime.property("add")([
+            r("Duration")([], {"milliseconds": quantity})
+          ]);
+        }
+      case "AddWeeks":
+        {
+          var dateTime = parseArgExpression(block, 0, parseStatement);
+          var weeks = parseArgExpression(block, 1, parseStatement);
+          return dateTime.property("add")([
+            r("Duration")(
+                [], {"days": literalNum(7).operatorMultiply(weeks)})
+          ]);
+        }
+      case "AddYears":
+        {
+          var dateTime = parseArgExpression(block, 0, parseStatement);
+          var years = parseArgExpression(block, 1, parseStatement);
+          return r("DateTime").newInstance([dateTime.property("year").operatorAdd(years),
+            dateTime.property("month"),
+            dateTime.property("day"),
+            dateTime.property("hour"),
+            dateTime.property("minute"),
+            dateTime.property("second"),
+            dateTime.property("millisecond"),
+          ]);
+        }
+      case "DayOfMonth":
+        return parseArgExpression(block, 0, parseStatement).property("day");
+      case "Hour":
+      case "Minute":
+      case "Month":
+      case "Second":
+      case "Year":
+        return parseArgExpression(block, 0, parseStatement)
+            .property(methodName!.toLowerCase());
+      case "Weekday":
+        return parseArgExpression(block, 0, parseStatement).property("day");
+      case "WeekdayName":
+        {
+          return r("DateFormat", intlPackage).newInstanceNamed(
+              "EEEE", [parseArgExpression(block, 0, parseStatement)]);
+        }
+      case "MonthName":
+        {
+          return r("DateFormat", intlPackage).newInstanceNamed(
+              "MMMM", [parseArgExpression(block, 0, parseStatement)]);
+        }
+      case "Now":
+        {
+          return r("DateTime.now")([]);
+        }
+      case "FormatDate":
+      case "FormatDateTime":
+      case "FormatTime":
+        var dateTime = parseArgExpression(block, 0, parseStatement);
+        var pattern = parseArgExpression(block, 1, parseStatement);
+        return r("DateFormat", intlPackage)
+            .newInstance([pattern]).property("format")([dateTime]);
+      case "Duration":
+        {
+          return parseArgExpression(block, 0, parseStatement)
+              .property("difference")
+              ([parseArgExpression(block, 1, parseStatement)])
+              .property("inMilliseconds");
+        }
+      case "DurationToDays":
+      case "DurationToHours":
+      case "DurationToMinutes":
+      case "DurationToSeconds":
+        {
+          return r("Duration").newInstance([], {
+            "milliseconds": parseArgExpression(block, 0, parseStatement)
+          }).property("in" + methodName!.substring(10));
+        }
+      case "DurationToWeeks":
+        {
+          return r("Duration")
+              .newInstance([], {
+                "milliseconds": parseArgExpression(block, 0, parseStatement)
+              })
+              .property("inDays")
+              .operatorDivide(literalNum(7));
+        }
+      case "GetMillis":
+        {
+          return parseArgExpression(block, 0, parseStatement)
+              .property("milliseconds");
+        }
+      case "SystemTime":
+        {
+          return r("DateTime.now")([]).property("inMilliseconds");
+        }
+      case "MakeDate":
+        {
+          var year = parseArgExpression(block, 0, parseStatement);
+          var month = parseArgExpression(block, 1, parseStatement);
+          var day = parseArgExpression(block, 2, parseStatement);
+          return r("DateTime").newInstance([year, month, day]);
+        }
+      case "MakeInstant":
+        {
+          return r("DateTime").property("parse")(
+              [parseArgExpression(block, 0, parseStatement)]);
+        }
+      case "MakeInstantFromMillis":
+        {
+          return r("DateTime").newInstanceNamed(
+              "fromMillisecondsSinceEpoch",
+              [parseArgExpression(block, 0, parseStatement)]);
+        }
+      case "MakeInstantFromParts":
+        {
+          var year = parseArgExpression(block, 0, parseStatement);
+          var month = parseArgExpression(block, 1, parseStatement);
+          var day = parseArgExpression(block, 2, parseStatement);
+          var hour = parseArgExpression(block, 3, parseStatement);
+          var minute = parseArgExpression(block, 4, parseStatement);
+          var second = parseArgExpression(block, 5, parseStatement);
+          return r("DateTime")
+              .newInstance([year, month, day, hour, minute, second]);
+        }
+      case "MakeTime":
+        {
+          var hour = parseArgExpression(block, 0, parseStatement);
+          var minute = parseArgExpression(block, 1, parseStatement);
+          var second = parseArgExpression(block, 2, parseStatement);
+          return r("DateTime").newInstance([
+            literalNum(0),
+            literalNum(1),
+            literalNum(1),
+            hour,
+            minute,
+            second
+          ]);
+        }
+      default:
+        return literalString(
+            "component expression not found $instanceName:$methodName!");
+    }
   }
 
   /// Parse an expression from the text category of builtin blocks

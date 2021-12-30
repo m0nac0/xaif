@@ -25,6 +25,7 @@ class PubspecBuilder {
     "url_launcher",
     "image_picker",
     "video_player",
+    "intl",
     //Third-party packages
     "share_plus",
     "just_audio",

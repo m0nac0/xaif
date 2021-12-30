@@ -32,9 +32,9 @@ import 'util_xml.dart';
 //TODO-List of issues / future work:
 // - fix GridLayout;
 // - dialog behaviour not exactly same as original?
-// - ideas: some media; clock/location; Web
+// - ideas: Clock (timer)/location
 // - Font Typeface; Focus; Button.FeedbackVisible/Shape(partial)/TextAlignment(incorrect; different default values; needs alignment: Alignment.centerLeft for Buttons)
-// - Further Features: Arrangements.AlignHorizontal/AlignVertical/BackgroundColor, Scrolling/Table-Arrangement
+// - Further Features: BackgroundColor, Scrolling/Table-Arrangement
 
 //Another idea: first parse the XML/(in the future JSON?) into a custom tree of dart objects with
 //relevant details, then walk that tree to generate dart code

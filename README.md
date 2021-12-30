@@ -163,7 +163,7 @@ building it in an admin shell!
     - VideoPlayer only supported on Android/iOS/web and only supports network files (http:// or https:// URLs)
 - Drawing/Animation: none
 - Maps: none
-- Sensors: only Clock (limited)
+- Sensors: only Clock (no Timer)
 - Social: Sharing, Texting and PhoneCall (but no direct messages/calls; no intercepting of messages/calls)
 - Storage: complete, except CloudDB
     - File does not have functionality for Delete, Append, LegacyMode
