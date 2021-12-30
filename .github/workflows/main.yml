@@ -99,7 +99,7 @@ jobs:
           inliner localhost:8000 > index.html
           git config user.email "CI@localhost.com"
           git config user.name "GH Actions"
-          git add index.html
+          git add -f index.html
           git commit -m "Update inlined index.html"
           git push
           cd ..
