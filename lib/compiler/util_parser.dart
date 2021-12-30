@@ -28,6 +28,7 @@ const lfalse = literalFalse;
 const materialPackage = "package:flutter/material.dart";
 const mathPackage = "dart:math";
 const convertPackage = "dart:convert";
+const asyncPackage = "dart:async";
 
 // packages supported by Dart/Flutter team
 const httpPackage = "package:http/http.dart";

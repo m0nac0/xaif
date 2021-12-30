@@ -159,6 +159,12 @@ Map<String, Map<String, Expression>> properties = {
     ...visibleProperties,
     ...sizeProperties,
   },
+  "Clock": {
+    "TimerEnabled": ltrue,
+    "TimerInterval": literalNum(1000),
+    //TODO implement TimerAlwaysFires
+    "TimerAlwaysFires": ltrue,
+  },
   "PhoneCall": {"PhoneNumber": literalString("")},
   "Texting": {
     "PhoneNumber": literalString(""),
@@ -198,6 +204,9 @@ Map<String, List<Event>> events = {
   ],
   "VideoPlayer": [
     Event("Completed"),
+  ],
+  "Clock": [
+    Event("Timer"),
   ],
   "File": [
     Event("AfterFileSaved", {"fileName": refer("String")}),

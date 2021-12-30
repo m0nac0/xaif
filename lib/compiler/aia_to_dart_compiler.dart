@@ -193,12 +193,7 @@ class AIAToDartCompiler {
           ..name = "sharedPrefs"
           ..type = r("SharedPreferences")
           ..modifier));
-        b.methods.add(Method((m) => m
-          ..name = "initState"
-          ..body = Block.of([
-            r("initSharedPrefs")([]).statement,
-            r("super.initState").statement
-          ])));
+        state.addInitStateStatement(r("initSharedPrefs")([]).statement);
         b.methods.add(Method((m) => m
           ..name = "initSharedPrefs"
           ..modifier = MethodModifier.async
@@ -208,6 +203,12 @@ class AIAToDartCompiler {
                   .assign(r("SharedPreferences.getInstance")([]).awaited)
                   .statement,
           ])));
+      }
+      if (state.initStateStatements.isNotEmpty) {
+        b.methods.add(Method((m) => m
+          ..name = "initState"
+          ..body = Block.of(
+              [...state.initStateStatements, r("super.initState").statement])));
       }
       if (state.usesEnsureNum) {
         b.methods.add(Method((m) => m

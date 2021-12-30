@@ -355,6 +355,50 @@ class ComponentParser {
         }
       case "Clock":
         {
+          var timer = getPropertyDartName(componentName, "Timer");
+          var timerEnabled = getPropertyDartName(componentName, "TimerEnabled");
+          state.ensureFieldExists(timer);
+
+          state.addInitStateStatement(wrapWithSetState(r(timerEnabled)
+              .assign(getComponentBoolProperty(component, "TimerEnabled") ??
+                  defaultValues[
+                      getPropertyDartName(componentName, "TimerEnabled")]!)
+              .statement));
+
+          // get TimerEnabled => Timer != null;
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.getter
+            ..name = timerEnabled
+            ..returns = r("bool")
+            ..body = r(timer).notEqualTo(literalNull).code
+            ..lambda = true));
+
+          state.gettersSetters.add(Method((m) => m
+            ..type = MethodType.setter
+            ..name = timerEnabled
+            ..requiredParameters.add(Parameter((p) => p..name = "value"))
+            ..body = Block.of([
+              r(timer).nullSafeProperty("cancel")([]).statement,
+              r(timer)
+                  .assign(r("value").conditional(
+                      r("Timer.periodic", asyncPackage)([
+                        r("Duration")([], {
+                          "milliseconds": getDartExpressionForProperty(
+                              propsDartNames,
+                              "TimerInterval",
+                              getComponentNumProperty(
+                                  component, "TimerInterval"),
+                              defaultValues)
+                        }),
+                        Method((m) => m
+                          ..requiredParameters
+                              .add(Parameter((p) => p..name = "_"))
+                          ..body = safeCallEventHandler(getDartEventHandler(
+                              state, componentName, "Timer"))).closure
+                      ]),
+                      literalNull))
+                  .statement
+            ])));
           return null;
         }
       case "Player":

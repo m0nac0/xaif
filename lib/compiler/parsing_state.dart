@@ -26,6 +26,8 @@ class ParsingState {
   bool usesSafeStringAddition = false;
   bool usesEnsureNum = false;
 
+  List<Code> initStateStatements = [];
+
   // First all blocks are processed. We put an entry with value null for
   // all component-attribute-variables they need. E.g. if the user has a
   // PhoneCall1.MakePhoneCall block, that puts a <"PhoneCall1_PhoneNumber",null>
@@ -50,5 +52,9 @@ class ParsingState {
   /// See docs for fields
   void ensureFieldExists(String name) {
     fields.putIfAbsent(name, () => null);
+  }
+
+  void addInitStateStatement(Code statement) {
+    initStateStatements.add(statement);
   }
 }
