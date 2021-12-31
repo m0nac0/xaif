@@ -14,6 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'dart:convert';
+
 //ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'dart:ui' as ui;
@@ -35,9 +36,18 @@ class AIAAccepter extends StatefulWidget {
 
 class _AIAAccepterState extends State<AIAAccepter> {
   // DropzoneViewController controller;
-  String code = "Select a *.aia file to get started!";
+  String code = "Select an *.aia file to get started!";
   Widget iframeWidget = Container();
   int number = 0;
+
+  static const warningText =
+      "You are running xaif as a web app. This only supports a "
+      "limited subset of components and should only be used as a "
+      "quick demo. Please see https://github.com/m0nac0/xaif on how to run "
+      "xaif with its full capabilities.\n"
+      "Important note: this demo will send the generated intermediate "
+      "Flutter code to dartpad.dev servers for compilation. It is recommended not to use this "
+      "with any sensitive data / projects.";
 
   bool hasConfirmed = false;
 
@@ -99,22 +109,16 @@ class _AIAAccepterState extends State<AIAAccepter> {
                 Container(
                   height: 20,
                 ),
-                const Text(
-                    "You are running xaif as a web app. This only supports a "
-                    "limited subset of components and should only be used as a "
-                    "quick demo. Please run xaif with `flutter run -d windows` or"
-                    "`flutter run -d linux` to use all of its capabilities.\n"
-                    "Important note: this demo will send the generated intermediate "
-                    "Flutter code to dartpad.dev servers. It is recommended not to use this "
-                    "with any sensitive data / projects."),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const SelectableText(warningText),
+                ),
                 Container(
                   height: 20,
                 ),
                 Container(
                     width: 400,
                     height: 400,
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.green)),
                     child: ElevatedButton(
                       child: const Text("Select AIA file"),
                       onPressed: () {
@@ -178,13 +182,7 @@ class _AIAAccepterState extends State<AIAAccepter> {
           Container(
             height: 20,
           ),
-          const Text("You are running xaif as a web app. This only supports a "
-              "limited subset of components and should only be used as a "
-              "quick demo. Please run xaif with `flutter run -d windows` or"
-              "`flutter run -d linux` to use all of its capabilities.\n"
-              "Important note: this demo will send the generated intermediate "
-              "Flutter code to dartpad.dev servers. It is recommended not to use this "
-              "with any sensitive data / projects."),
+          const SelectableText(warningText),
           Container(
             height: 20,
           ),
