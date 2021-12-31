@@ -79,7 +79,7 @@ jobs:
       - run: |
           git config --global user.email "CI@localhost"
           git config --global user.name "GH Actions CI"
-          flutter build web
+          flutter build web --base-href /xaif/
           mv build/web docs
           git add -f docs
           git commit -m "web build: ${{ github.event.commits[0].message }}"
