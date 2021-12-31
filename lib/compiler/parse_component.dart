@@ -351,7 +351,8 @@ class ComponentParser {
                       .newInstance([r(controllerName)]),
                   unconstrainedWidth,
                   unconstrainedHeight,
-                  expandForAutomatic: true));
+                  expandForAutomaticWidth: true,
+                  expandForAutomaticHeight: true));
         }
       case "Clock":
         {
@@ -909,7 +910,7 @@ class ComponentParser {
             }),
             unconstrainedWidth,
             unconstrainedHeight,
-            expandForAutomatic: true));
+            expandForAutomaticWidth: true));
   }
 
   Expression getSpinnerDartExpression(
@@ -1139,11 +1140,12 @@ class ComponentParser {
                             //     getComponentStringProperty(
                             //         component, "Picture"))),
                             defaultValues))
-                  ]))
+                  ])).asA(r("ImageProvider"))
             }),
             unconstrainedWidth,
             unconstrainedHeight,
-            expandForAutomatic: true));
+            expandForAutomaticWidth: false,
+            expandForAutomaticHeight: false));
   }
 
   Expression getListViewDartExpression(
@@ -1349,7 +1351,8 @@ class ComponentParser {
       Expression child,
       bool unconstrainedWidth,
       bool unconstrainedHeight,
-      {expandForAutomatic = false}) {
+      {expandForAutomaticWidth = false,
+      expandForAutomaticHeight = false}) {
     Expression width = getDartExpressionForProperty(dartProperties, "Width",
         getComponentNumProperty(component, "Width"), defaultValues);
     Expression height = getDartExpressionForProperty(dartProperties, "Height",
@@ -1375,7 +1378,7 @@ class ComponentParser {
     });
 
     if (unconstrainedWidth) {
-      if (expandForAutomatic &&
+      if (expandForAutomaticWidth &&
           width is LiteralExpression &&
           (width.literal == "-2" || width.literal == "-1")) {
         return r("Expanded")([], {
@@ -1385,7 +1388,7 @@ class ComponentParser {
     }
 
     if (unconstrainedHeight) {
-      if (expandForAutomatic &&
+      if (expandForAutomaticHeight &&
           height is LiteralExpression &&
           (height.literal == "-2" || height.literal == "-1")) {
         return r("Expanded")([], {
