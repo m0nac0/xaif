@@ -35,52 +35,36 @@ platforms.<br>
 Please note that xaif has only undergone (limited) testing on Windows and Linux (Ubuntu). It should in theory also work
 on macOS, but this hasn't been tested, yet.
 
-**To get xaif**, you have two recommended options (plus two other fallback options).<br>
+**To get xaif**, you have two recommended options (plus one other fallback option).<br>
 **Choose one**:
 
-1. **Run the source code directly:**
-    1. Either clone this repository with git or download it as a zip-file from GitHub (green button titled "Code")
-       and unzip it to any location.<br>
-    2. Then open a shell in the location where you cloned/unzipped the repository and run <br>`flutter run -d windows` (if
-       your computer is running Windows) <br>or `flutter run -d linux` (if your computer is running Linux)<br> or 
-       `flutter run -d macos` (if your computer is running macOS).<br>
-       (This first approach will require you to have followed not only the "Basic Flutter setup", but also the *additional* setup steps for your computer's operating
-       system in the Flutter installation guide. So if you want to run xaif with this approach, you need to
-       *also* follow the <br>["Windows setup" step](https://docs.flutter.dev/get-started/install/windows#windows-setup) in
-       the Flutter Windows installation guide if your computer is running Windows,<br> or
-       the ["Linux setup" step](https://docs.flutter.dev/get-started/install/linux#linux-setup) in the Flutter Linux
-       installation guide if your computer is running Linux, <br>
-       or the ["macOS setup" step](https://docs.flutter.dev/get-started/install/macos#macos-setup) in the Flutter Linux
-       installation guide if your computer is running macOS.)
-       <br><br>
-2. **Run prebuilt executables:** <br>
-   Alternatively, you can download and run prebuilt binaries of xaif from the CI. They are available from
-   the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or
-   from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain)
-   (as artifacts). <br>
-   For this approach you only need to complete the basic Flutter installation!
-    <br><br>
-3. **Very limited: run xaif as web app from source:** <br>
-   *This approach has serious limitations, and it is recommended that you use one of first other two approaches, if
-   possible*<br>
-    1. Either clone this repository with git or download it as a zip-file from GitHub (
-       green button titled "Code")
-       and unzip it to any location.<br>
-    2. Then open a shell in the location where you cloned/unzipped the repository and run `flutter run`. Choose Chrome
-       or Edge as target devices. After a short time, your browser should open and show a web version of xaif.
-        <br><br>
- 4. **Very limited: run xaif as pre-built web app:** <br>
-   *This approach has serious limitations, and it is recommended that you use one of the first two approaches, if
-   possible.*<br>
-   *This fourth approach is the only approach not requiring you to have Flutter installed.*
-    1. Download and unzip a web build of xaif from the CI. They are called `build_web.zip` and are available from
-   the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or
-   from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain)
-   (as artifacts). <br>
-    2. Then run a local development web server in the directory where you unzipped the web_build. For example, if you have
-    Python 3 installed, you could run `python -m http.server 8000`. You can find a list of different commands to start such
-    a local web server [here](https://gist.github.com/willurd/5720255)
-    3. Open your browser and to go the adress of the web server you just started, for example `localhost:8000`
+#### 1. **Run the source code directly:**
+1. Either clone this repository with git or download it as a zip-file from GitHub (green button titled "Code")
+   and unzip it to any location.<br>
+2. Then open a shell in the location where you cloned/unzipped the repository and run <br>`flutter run -d windows` (if
+   your computer is running Windows) <br>or `flutter run -d linux` (if your computer is running Linux)<br> or
+   `flutter run -d macos` (if your computer is running macOS).<br>
+   (This first approach will require you to have followed not only the "Basic Flutter setup", but also the *additional* setup steps for your computer's operating
+   system in the Flutter installation guide. So if you want to run xaif with this approach, you need to
+   *also* follow the <br>["Windows setup" step](https://docs.flutter.dev/get-started/install/windows#windows-setup) in
+   the Flutter Windows installation guide if your computer is running Windows,<br> or
+   the ["Linux setup" step](https://docs.flutter.dev/get-started/install/linux#linux-setup) in the Flutter Linux
+   installation guide if your computer is running Linux, <br>
+   or the ["macOS setup" step](https://docs.flutter.dev/get-started/install/macos#macos-setup) in the Flutter Linux
+   installation guide if your computer is running macOS.)
+   <br>
+#### 2. **Run prebuilt executables:**
+Alternatively, you can download and run prebuilt binaries of xaif from the CI. They are available from
+the [releases page](https://github.com/m0nac0/xaif/releases) (as Assets) or
+from [any successful CI Workflow run](https://github.com/m0nac0/xaif/actions/workflows/main.yml?query=branch%3Amain)
+(as artifacts). <br>
+For this approach you only need to complete the basic Flutter installation!
+<br>
+#### 3. **Very limited: use xaif web demo:**
+*This has serious limitations, and it is recommended that you use one of the first two approaches, if
+possible*<br>
+You can go to https://m0nac0.github.io/xaif and test a web demo of xaif. This should only be used as a quick demo.<br>
+It does not require you to install anything.
 
 ## Usage Guide
 
@@ -106,20 +90,20 @@ After you have built an executable you can also launch it (or manually copy it f
 ### Additional information
 
 - Please note that your operating system may at any time delete temporary files, including the project directories created
-by xaif if you choose your system's temporary files directory as the location of the project directory. If you want to
-back up the project directory, simply copy it to another location (you can see the location of the project directory in
-xaif).
+  by xaif if you choose your system's temporary files directory as the location of the project directory. If you want to
+  back up the project directory, simply copy it to another location (you can see the location of the project directory in
+  xaif).
 
 - Every time you launch xaif, a new project directory is created. If you want to use xaif for
-different projects, it is recommended to close and reopen xaif to actually create a new project directory
-(otherwise the files from the old project are overwritten).
+  different projects, it is recommended to close and reopen xaif to actually create a new project directory
+  (otherwise the files from the old project are overwritten).
 
 - xaif does not delete its project directory, unless you explicitly tell it to. If you want to save storage space you
-should delete project directories that you don't need any longer.
+  should delete project directories that you don't need any longer.
 
 ### Available target platforms
 
-Depending on your computer's operating system, the choice of target platforms 
+Depending on your computer's operating system, the choice of target platforms
 (= the operating systems for which you can compile your project) will vary. For example, if you are on a
 Windows computer, you won't be able to compile your app for iOS.
 
