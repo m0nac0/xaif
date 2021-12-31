@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  web-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1.5.3
+      - run: flutter pub get
+      - name: git config
+      - run: |
+          git config --global user.email "CI@localhost"
+          git config --global user.name "GH Actions CI"
+      - run: flutter build web --base-href /xaif/
+      - run: mv build/web docs
+      - name: git commit / push
+      - run: |
+          git add -f docs
+          git commit -m "web build: ${{ github.event.commits[0].message }}"
+          git push --force origin HEAD:web-build
