@@ -41,6 +41,9 @@ class _AIAAccepterState extends State<AIAAccepter> {
   int number = 0;
 
   static const warningText =
+      "This tool is in an early development phase, please read the "
+      "README (https://github.com/m0nac0/xaif/blob/main/README.md) "
+      "and the LICENSE (https://github.com/m0nac0/xaif/blob/main/LICENSE)\n"
       "You are running xaif as a web app. This only supports a "
       "limited subset of components and should only be used as a "
       "quick demo. Please see https://github.com/m0nac0/xaif on how to run "
