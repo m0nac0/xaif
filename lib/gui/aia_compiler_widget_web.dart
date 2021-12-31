@@ -109,14 +109,14 @@ class _AIAAccepterState extends State<AIAAccepter> {
                 Container(
                   height: 20,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const SelectableText(warningText),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: SelectableText(warningText),
                 ),
                 Container(
                   height: 20,
                 ),
-                Container(
+                SizedBox(
                     width: 400,
                     height: 400,
                     child: ElevatedButton(
