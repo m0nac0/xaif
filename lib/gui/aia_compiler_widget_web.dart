@@ -14,7 +14,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'dart:convert';
-
 //ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'dart:ui' as ui;
@@ -94,10 +93,12 @@ class _AIAAccepterState extends State<AIAAccepter> {
         //HtmlEscape(HtmlEscapeMode.element).convert(code.replaceAll("\n", "<br>")) +
         code
             .split("\n")
-            .where((e) => !e.trim().startsWith("//"))
+            .where((e) => !e.trim().startsWith("// @dart="))
             .map((e) => const HtmlEscape(HtmlEscapeMode.element).convert(e))
-            .fold("",
-                (previousValue, element) => previousValue + "\n" + element) +
+            .fold(
+                "",
+                (previousValue, element) =>
+                    previousValue + "&NewLine;" + element) +
         '''</code></pre></body></html>''';
   }
 
@@ -196,7 +197,7 @@ class _AIAAccepterState extends State<AIAAccepter> {
                   onPressed: () {
                     reloadIFrame('''
     void main(){
-      print('hello world');
+      print('Select an *.aia file to get started!');
     }''');
                     setState(() {
                       hasConfirmed = true;
