@@ -434,7 +434,7 @@ class _AIAAccepterState extends State<AIAAccepter> {
         //"/c",
         //"flutter",
         "build",
-        id,
+        ...id.split(" "),
       ],
       workingDirectory: dir!.absolute.path,
       runInShell: true,
