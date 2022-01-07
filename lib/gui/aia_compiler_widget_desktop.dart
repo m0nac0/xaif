@@ -649,8 +649,8 @@ class _AIAAccepterState extends State<AIAAccepter> {
           [Uri.directory(fileOrDir).toFilePath(windows: Platform.isWindows)],
           runInShell: true, shell: shell, workingDirectory: dir!.absolute.path);
     } else if (Platform.isMacOS) {
-      // runWithOptionalShell("open", [fileOrDir], runInShell: true,
-      //     shell: shell, workingDirectory: dir?.absolute.path);
+      runWithOptionalShell("open", [fileOrDir],
+          runInShell: true, shell: shell, workingDirectory: dir?.absolute.path);
     } else if (Platform.isLinux) {
       runWithOptionalShell("xdg-open", [fileOrDir],
           runInShell: true, shell: shell, workingDirectory: dir?.absolute.path);
