@@ -63,8 +63,8 @@ For this approach you only need to complete the basic Flutter installation!
 #### 3. **Very limited: use xaif web demo:**
 *This has serious limitations, and it is recommended that you use one of the first two approaches, if
 possible*<br>
-You can go to https://m0nac0.github.io/xaif and test a web demo of xaif. This should only be used as a quick demo.<br>
-It does not require you to install anything.
+~You can go to https://m0nac0.github.io/xaif and test a web demo of xaif. This should only be used as a quick demo.<br>
+It does not require you to install anything.~
 
 ## Usage Guide
 
