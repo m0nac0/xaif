@@ -1,0 +1,5 @@
+{
+  "image": "cirrusci/flutter:stable",
+  "features": {
+  }
+}
